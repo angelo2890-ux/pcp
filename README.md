@@ -7,7 +7,7 @@ whole run of cars, not just one deal.
 
 | File | What it is |
 |---|---|
-| `index.html` | The entire app. This is the one that matters. |
+| `index.html` | The entire app, React and charts included. The only file that matters. |
 | `manifest.webmanifest` | Makes it install as an app rather than a bookmark |
 | `apple-touch-icon.png` | The home-screen icon on iPhone |
 | `icon-192.png`, `icon-512.png` | Icons for Android / Chrome |
@@ -43,7 +43,9 @@ version, close the app fully (swipe up) and reopen it.
 
 ## Notes
 
-- It needs a connection to open, because React and the charting library load
-  from a CDN. Once it's open, everything works without signal.
-- If the chart ever fails to load, the app says so and every number still works.
+- `index.html` is completely self-contained. React and the charting library are
+  built into it, so there is no CDN to go missing and it works with no signal
+  once Safari has it cached.
 - Nothing is stored and nothing is sent anywhere. It's all worked out on the phone.
+- The only thing loaded from outside is the two Google fonts. Without a
+  connection it falls back to the system fonts and still works fine.
