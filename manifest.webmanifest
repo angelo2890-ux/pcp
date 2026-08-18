@@ -1,0 +1,16 @@
+{
+  "name": "PCP over the long run",
+  "short_name": "PCP",
+  "description": "Compare PCP deposits and interest rates across a whole run of cars.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E3E9EA",
+  "theme_color": "#D3DBDD",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
