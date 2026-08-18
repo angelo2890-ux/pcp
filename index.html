@@ -165,6 +165,16 @@ td b{font-weight:700}
   transition:opacity .2s;pointer-events:none
 }
 .toast.show{opacity:1}
+
+.hplink{display:block;margin-top:14px;background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.morelink{background:none;border:0;padding:0;margin-top:12px;font:inherit;font-size:12px;color:#9FC6E4;text-decoration:underline;cursor:pointer}
+.kv .wide{grid-column:1/-1}
+.cols>div{min-width:0}
+@media(min-width:900px){
+  .wrap{max-width:1100px}
+  .hd,.nav{max-width:1100px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+}
 </style>
 </head>
 <body>
@@ -188,20 +198,12 @@ td b{font-weight:700}
 </header>
 
 <div class="wrap">
+<div class="cols">
+<div>
 
   <!-- ============ THE DEAL ============ -->
   <div class="card">
     <div class="ch">The deal</div>
-
-    <div class="seg" style="margin-bottom:14px">
-      <button id="tPCP" class="on">PCP &mdash; Solutions</button>
-      <button id="tHP">Hire Purchase</button>
-    </div>
-
-    <div class="row" style="margin-bottom:14px">
-      <div class="seg sm"><button id="cNew" class="on">New</button><button id="cUsed">Used</button></div>
-      <div class="seg sm"><button id="fIce" class="on">Petrol / Diesel</button><button id="fEv">Electric</button></div>
-    </div>
 
     <div class="row">
       <div class="fld">
@@ -227,6 +229,10 @@ td b{font-weight:700}
       <label>Age of car now</label>
       <div class="pills" id="agePills"></div>
     </div>
+    <div class="fld" id="usedFuelWrap" style="display:none">
+      <label>Fuel</label>
+      <div class="seg sm" style="max-width:320px"><button id="uIce" class="on">Petrol / Diesel</button><button id="uEv">Electric</button></div>
+    </div>
   </div>
 
   <!-- ============ TERM & MILEAGE ============ -->
@@ -239,6 +245,7 @@ td b{font-weight:700}
     <div class="fld" id="mileWrap">
       <label>Miles a year</label>
       <div class="pills" id="milePills"></div>
+      <input type="range" id="mileSlider" min="4000" max="30000" step="1000" style="margin-top:8px">
     </div>
   </div>
 
@@ -251,28 +258,23 @@ td b{font-weight:700}
       <span id="aprRead" style="font-size:15px;font-weight:700;color:var(--ink);letter-spacing:0"></span>
     </label>
     <input type="range" id="aprSlider" min="0" max="20" step="0.1">
+    <button class="hplink" id="hpLink">Need a straight Hire Purchase figure? &rarr;</button>
   </div>
+
+</div>
+<div>
 
   <!-- ============ RESULT ============ -->
   <div class="card result" id="result">
     <button class="dot" id="pDot" aria-label="."><i></i></button>
-    <div class="ch">Monthly payment</div>
+    <div class="ch" id="resHead">Monthly payment</div>
     <div class="big"><span class="amt" id="monthly">&pound;0</span><span class="per" id="perNote"></span></div>
     <div class="subline" id="subline"></div>
     <div class="kv" id="kvGrid"></div>
+    <button class="morelink" id="moreBtn">More detail</button>
     <div class="btnrow">
       <button class="btn solid" id="copyBtn">Copy quote</button>
       <button class="btn" id="resetBtn">Clear</button>
-    </div>
-  </div>
-
-  <!-- ============ TERM COMPARISON ============ -->
-  <div class="card flush">
-    <div class="tw">
-      <table id="termTable">
-        <thead><tr><th>Term</th><th>Monthly</th><th id="thBal">Final payment</th><th>Total payable</th></tr></thead>
-        <tbody></tbody>
-      </table>
     </div>
   </div>
 
@@ -292,7 +294,20 @@ td b{font-weight:700}
     <div class="hint" id="solveHint"></div>
   </div>
 
+  <!-- ============ TERM COMPARISON ============ -->
+  <div class="card flush">
+    <div class="tw">
+      <table id="termTable">
+        <thead><tr><th>Term</th><th>Monthly</th><th id="thBal">Est. final payment</th><th id="thTot" style="display:none">Total payable</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="disc" id="disc"></div>
+
+</div>
+</div>
 </div>
 
 <div class="scrim" id="scrim"></div>
@@ -352,14 +367,18 @@ var RV = {
   used_ev : {24:52.0, 36:41.0, 42:37.0, 48:33.0, 60:26.0}
 };
 
+/* Each rate implies the car, so picking one silently sets condition
+   and fuel and the residual curve follows. 0 / 7.9 / 8.5 are the new
+   petrol-diesel campaign rates, 2.9 / 3.5 the new electric (ID) rates,
+   11.9 / 13.9 the used rates. Used asks age + fuel separately. */
 var RATES = [
-  {apr:0,    note:'Campaign',    cond:'new',  fuel:'ice'},
-  {apr:2.9,  note:'New EV',      cond:'new',  fuel:'ev'},
-  {apr:3.5,  note:'ID range',    cond:'new',  fuel:'ev'},
-  {apr:7.9,  note:'Used / promo',cond:'used', fuel:'ice'},
-  {apr:8.5,  note:'New petrol',  cond:'new',  fuel:'ice'},
-  {apr:11.9, note:'Used',        cond:'used', fuel:'ice'},
-  {apr:13.5, note:'Used, older', cond:'used', fuel:'ice'}
+  {apr:0,    cond:'new',  fuel:'ice'},
+  {apr:2.9,  cond:'new',  fuel:'ev'},
+  {apr:3.5,  cond:'new',  fuel:'ev'},
+  {apr:7.9,  cond:'new',  fuel:'ice'},
+  {apr:8.5,  cond:'new',  fuel:'ice'},
+  {apr:11.9, cond:'used', fuel:null},
+  {apr:13.9, cond:'used', fuel:null}
 ];
 
 var TERMS = [24,36,42,48,60];            /* every term the residual table covers */
@@ -375,6 +394,7 @@ var DEF_C = {prod:1600,prodOn:true,rvTweak:0,gmfvOver:'',fee:10,excess:8};
 
 var S = load('g1quote_s', DEF_S);
 var C = load('g1quote_c', DEF_C);
+var showMore = false;   /* per-visit, never saved */
 
 function load(k,d){
   try{ var r = JSON.parse(localStorage.getItem(k)); if(!r) return clone(d);
@@ -482,20 +502,28 @@ function buildPills(){
     function(it){ S.age=it.v; render(); });
 
   pills($('ratePills'),
-    RATES.map(function(r){ return {v:r,label:r.apr.toFixed(1)+'%',sub:r.note}; }),
+    RATES.map(function(r){ return {v:r,label:r.apr.toFixed(1)+'%'}; }),
     function(it){ return Math.abs(it.v.apr - S.apr) < 0.001; },
-    function(it){ S.apr=it.v.apr; S.cond=it.v.cond; S.fuel=it.v.fuel; C.gmfvOver=''; $('gmfvOver').value=''; render(); });
+    function(it){
+      S.apr = it.v.apr;
+      if(it.v.cond==='used' && S.cond!=='used') S.fuel='ice';
+      S.cond = it.v.cond;
+      if(it.v.fuel) S.fuel = it.v.fuel;
+      C.gmfvOver=''; $('gmfvOver').value='';
+      render();
+    });
 }
 
 /* ---------------- render ---------------- */
 function render(){
   var a = args(), r = calc(a), pcp = S.mode==='pcp';
 
-  /* segmented states */
-  $('tPCP').className = pcp?'on':''; $('tHP').className = pcp?'':'on';
-  $('cNew').className = S.cond==='new'?'on':''; $('cUsed').className = S.cond==='used'?'on':'';
-  $('fIce').className = S.fuel==='ice'?'on':''; $('fEv').className = S.fuel==='ev'?'on':'';
+  /* what shows depends on the rate picked */
+  $('resHead').textContent = pcp ? 'Monthly payment' : 'Monthly payment \u2014 Hire Purchase';
+  $('hpLink').innerHTML = pcp ? 'Need a straight Hire Purchase figure? &rarr;' : '&larr; Back to PCP \u2014 Solutions';
   $('ageWrap').style.display = S.cond==='used' ? '' : 'none';
+  $('usedFuelWrap').style.display = S.cond==='used' ? '' : 'none';
+  $('uIce').className = S.fuel==='ice'?'on':''; $('uEv').className = S.fuel==='ev'?'on':'';
   $('mileWrap').style.display = pcp ? '' : 'none';
   $('termCardHead').textContent = pcp ? 'Term & mileage' : 'Term';
   if(termList().indexOf(S.term) === -1) S.term = pcp ? 48 : 48;
@@ -505,6 +533,7 @@ function render(){
   syncInput('price',S.price); syncInput('dep',S.dep); syncInput('px',S.px);
   syncInput('contrib',S.contrib); syncInput('target',S.target);
   $('aprSlider').value = S.apr;
+  $('mileSlider').value = clamp(S.miles,4000,30000);
   $('aprRead').textContent = num(S.apr).toFixed(1)+'% APR';
 
   /* headline */
@@ -518,22 +547,26 @@ function render(){
   var over = isFinite(parseFloat(C.gmfvOver)) && parseFloat(C.gmfvOver)>0;
   var kv = [
     ['Total deposit', money(r.totalDep,0), a.contrib>0 ? 'inc '+money(a.contrib,0)+' contribution' : ''],
-    ['Amount of credit', money(r.credit,0), ''],
-    [pcp?'Optional final payment':'Option to purchase fee',
-       money(r.finalDue,0),
-       pcp ? (Math.round(r.balloon/S.price*1000)/10 || 0)+'% of price'+(over?' · set by hand':'') : 'payable with the last instalment'],
-    ['Total amount payable', money(r.totalPayable,0), 'inc deposit'],
-    ['Cost of credit', money(r.charges,0), 'interest &amp; fees'],
-    ['Excess mileage', num(C.excess).toFixed(1)+'p', 'per mile over']
+    ['Amount of credit', money(r.credit,0), '']
   ];
-  if(!pcp) kv.splice(5,1);
-  $('kvGrid').innerHTML = kv.map(function(k){
-    return '<div><div class="k">'+k[0]+'</div><div class="v">'+k[1]+
+  if(pcp) kv.push(['Optional final payment', money(r.finalDue,0),
+      over ? 'entered figure' : 'estimate \u2014 exact figure set by VWFS']);
+  else kv.push(['Option to purchase fee', money(r.finalDue,0), 'payable with the last instalment']);
+  if(showMore){
+    kv.push(['Total amount payable', money(r.totalPayable,0), 'inc deposit']);
+    kv.push(['Cost of credit', money(r.charges,0), 'interest &amp; fees']);
+    if(pcp) kv.push(['Excess mileage', num(C.excess).toFixed(1)+'p', 'per mile over']);
+  }
+  $('kvGrid').innerHTML = kv.map(function(k,ix){
+    var wide = (ix===kv.length-1 && kv.length%2===1) ? ' class="wide"' : '';
+    return '<div'+wide+'><div class="k">'+k[0]+'</div><div class="v">'+k[1]+
            (k[2]?' <small>'+k[2]+'</small>':'')+'</div></div>';
   }).join('');
+  $('moreBtn').textContent = showMore ? 'Less detail' : 'More detail';
 
   /* term comparison */
-  $('thBal').textContent = pcp ? 'Final payment' : 'Option fee';
+  $('thBal').textContent = pcp ? 'Est. final payment' : 'Option fee';
+  $('thTot').style.display = showMore ? '' : 'none';
   var tb = $('termTable').querySelector('tbody');
   tb.innerHTML = termList().map(function(t){
     var savedTerm = S.term; S.term = t;
@@ -543,7 +576,7 @@ function render(){
     return '<tr class="'+(t===S.term?'here':'')+'"><td>'+t+' months</td>'+
            '<td><b>'+money(rr.monthly,2)+'</b></td>'+
            '<td>'+money(rr.finalDue,0)+'</td>'+
-           '<td>'+money(rr.totalPayable,0)+'</td></tr>';
+           (showMore ? '<td>'+money(rr.totalPayable,0)+'</td>' : '')+'</tr>';
   }).join('');
 
   /* work backwards */
@@ -613,12 +646,11 @@ $('gmfvOver').addEventListener('input', function(){ C.gmfvOver = this.value; ren
 $('rvTweak').addEventListener('input', function(){ C.rvTweak = num(this.value); render(); });
 $('aprSlider').addEventListener('input', function(){ S.apr = num(this.value); render(); });
 
-$('tPCP').onclick = function(){ S.mode='pcp'; render(); };
-$('tHP').onclick  = function(){ S.mode='hp';  render(); };
-$('cNew').onclick = function(){ S.cond='new'; render(); };
-$('cUsed').onclick= function(){ S.cond='used';render(); };
-$('fIce').onclick = function(){ S.fuel='ice'; render(); };
-$('fEv').onclick  = function(){ S.fuel='ev';  render(); };
+$('hpLink').onclick = function(){ S.mode = S.mode==='pcp' ? 'hp' : 'pcp'; render(); };
+$('uIce').onclick = function(){ S.fuel='ice'; C.gmfvOver=''; $('gmfvOver').value=''; render(); };
+$('uEv').onclick  = function(){ S.fuel='ev';  C.gmfvOver=''; $('gmfvOver').value=''; render(); };
+$('mileSlider').addEventListener('input', function(){ S.miles = num(this.value); render(); });
+$('moreBtn').onclick = function(){ showMore = !showMore; render(); };
 
 $('pDot').onclick = function(){ C.prodOn = !C.prodOn; render(); };
 
@@ -649,10 +681,9 @@ $('copyBtn').onclick = function(){
   L.push('APR                   '+num(S.apr).toFixed(1)+'%');
   L.push('');
   L.push('MONTHLY               '+money(r.monthly,2));
-  if(pcp) L.push('Optional final        '+money(r.finalDue,0)+' (inc '+money(a.fee,0)+' fee)');
-  L.push('Total amount payable  '+money(r.totalPayable,0));
+  if(pcp) L.push('Est. final payment    '+money(r.finalDue,0));
   L.push('');
-  if(pcp) L.push('Excess mileage '+num(C.excess).toFixed(1)+'p per mile.');
+  if(pcp) L.push('The final payment is an estimate \u2014 the exact figure comes from Volkswagen Financial Services.');
   L.push('Indicative figures, subject to status and a full quotation.');
   var txt = L.join('\n');
   var done = function(){ toast('Quote copied'); };
