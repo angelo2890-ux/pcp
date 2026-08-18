@@ -1,51 +1,60 @@
-# PCP over the long run
+# Volkswagen Chelmsford — quotation tool
 
-A single-page worksheet that compares PCP deposits and interest rates across a
-whole run of cars, not just one deal.
+Two pages, no server, no accounts, nothing sent anywhere.
 
-## What's in here
+| Page | What it does |
+|---|---|
+| `index.html` | **Quote.** Price, deposit, term, mileage and rate in, monthly payment out. PCP by default, Hire Purchase on a toggle. |
+| `overtime.html` | **Over time.** The original worksheet — what a run of PCP deals costs across ten or twenty years, and whether the rate or the deposit is the thing worth negotiating. |
+
+## Files
 
 | File | What it is |
 |---|---|
-| `index.html` | The entire app, React and charts included. The only file that matters. |
+| `index.html` | The quote calculator. Self-contained. |
+| `overtime.html` | The long-run worksheet. Self-contained. |
 | `manifest.webmanifest` | Makes it install as an app rather than a bookmark |
 | `apple-touch-icon.png` | The home-screen icon on iPhone |
 | `icon-192.png`, `icon-512.png` | Icons for Android / Chrome |
 | `favicon-32.png` | The little tab icon |
 
-## Putting it online (all in a browser, no software to install)
+## How the figures are worked out
 
-1. Go to **github.com/new**. Name the repo `pcp` — anything is fine.
-   Set it to **Public**. Tick **Add a README file**. Click **Create repository**.
-2. On the repo page click **Add file → Upload files**. Drag in every file from
-   this folder. Scroll down, click **Commit changes**.
-3. Click **Settings** (top of the repo) → **Pages** in the left sidebar.
-4. Under *Build and deployment*, set **Source** to *Deploy from a branch*,
-   **Branch** to `main` and the folder to `/ (root)`. Click **Save**.
-5. Wait 1–2 minutes, then refresh that Settings → Pages screen. It'll show
-   your address: `https://YOURNAME.github.io/pcp/`
+Payments are monthly in arrears, the first one a month after delivery. On a PCP
+the term carries one payment fewer than its length — a 48-month agreement is 47
+payments and then the optional final payment in month 48, which is how
+Volkswagen Financial Services write it. The APR is converted to a monthly rate
+and the optional final payment is discounted back over the full term.
+
+The optional final payment is estimated from a residual curve that takes the
+term, the annual mileage, whether the car is new or used, and whether it is
+electric or not. Electric cars carry a much lower guaranteed future value —
+around 28% of the price over four years against roughly 41% for petrol and
+diesel. The curve is calibrated against published Volkswagen representative
+examples and reproduces their monthly figures to within about 20p. It is still
+an estimate: the real guaranteed future value is set by VWFS and can differ, so
+type the real one in when you have it.
+
+Not included: road fund licence, insurance, excess mileage, damage beyond fair
+wear and tear, or any acceptance fee. Nothing here is a quotation.
+
+## Putting it online
+
+1. Go to **github.com/new**. Name the repo `pcp`. Public. Tick
+   **Add a README file**. **Create repository**.
+2. **Add file → Upload files**. Drag in every file from this folder.
+   **Commit changes**.
+3. **Settings → Pages**. Source *Deploy from a branch*, branch `main`,
+   folder `/ (root)`. **Save**.
+4. A minute later it's live at `https://YOURNAME.github.io/pcp/`
 
 ## Getting it on the home screen
 
-Open that address **in Safari** on the iPhone (not Chrome — only Safari can add
-to the home screen properly on iOS).
-
-Share button (the square with the arrow) → **Add to Home Screen** → **Add**.
-
-It'll sit there with the red PCP stamp icon and open full-screen with no
-address bar, like a real app.
+Open the address **in Safari** on the iPhone. Share button → **Add to Home
+Screen** → **Add**. It opens full-screen with no address bar.
 
 ## Changing it later
 
-Go to the repo, click `index.html`, click the pencil icon, edit, commit.
-The live site updates within a minute or so. If the phone shows the old
-version, close the app fully (swipe up) and reopen it.
-
-## Notes
-
-- `index.html` is completely self-contained. React and the charting library are
-  built into it, so there is no CDN to go missing and it works with no signal
-  once Safari has it cached.
-- Nothing is stored and nothing is sent anywhere. It's all worked out on the phone.
-- The only thing loaded from outside is the two Google fonts. Without a
-  connection it falls back to the system fonts and still works fine.
+Open the repo, click the file, click the pencil, edit, commit. The live site
+updates within a minute. If the phone still shows the old version, close the
+app fully and reopen it.
