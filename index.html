@@ -159,6 +159,15 @@ td b{font-weight:700}
 }
 .sheetp.show{display:block}
 .sheetp h3{margin:0 0 4px;font-size:16px}
+.livebar{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  background:var(--blue);color:#fff;border-radius:6px;padding:10px 13px;margin:12px 0 16px;
+  position:sticky;top:-18px;z-index:5
+}
+.livebar .lk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9FC6E4}
+.livebar .lv{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1;transition:color .12s}
+.livebar .lv.flash{color:var(--cyan)}
+.livebar .ls{display:block;font-size:10.5px;font-weight:500;color:#9FC6E4;letter-spacing:.04em;margin-top:3px;text-align:right}
 .toast{
   position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:var(--blue);color:#fff;
   padding:10px 18px;border-radius:20px;font-size:13.5px;font-weight:600;z-index:200;opacity:0;
@@ -313,12 +322,20 @@ td b{font-weight:700}
 <div class="scrim" id="scrim"></div>
 <div class="sheetp" id="panel">
   <h3>Tool settings</h3>
-  <div class="hint" style="margin-bottom:14px">Only you see this.</div>
+  <div class="hint" style="margin-bottom:0">Only you see this.</div>
+
+  <div class="livebar">
+    <span class="lk">Monthly<br>right now</span>
+    <span><span class="lv" id="panelMonthly">&pound;0</span><small class="ls" id="panelSub"></small></span>
+  </div>
 
   <div class="fld">
     <label>Adjustment amount</label>
     <div class="inp"><span class="pfx">&pound;</span><input type="number" id="prodAmt" inputmode="numeric" step="50" min="0"></div>
-    <div class="hint">Comes off the deposit when the marker by the monthly figure is filled in. Tap the marker to switch.</div>
+    <div class="seg sm" style="max-width:240px;margin-top:8px">
+      <button id="prodOnBtn">Included</button><button id="prodOffBtn">Off</button>
+    </div>
+    <div class="hint" id="prodState"></div>
   </div>
 
   <div class="fld">
@@ -411,6 +428,10 @@ function save(){
        localStorage.setItem('g1quote_c',JSON.stringify(C)); }catch(e){}
 }
 function clone(o){ var r={}; for(var p in o) r[p]=o[p]; return r; }
+/* overwrite in place - never reassign S or C, or bound handlers end up
+   writing into an orphaned object and the screen stops responding */
+function fill(target, src){ for(var p in target) delete target[p];
+                            for(var q in src) target[q]=src[q]; return target; }
 function $(id){ return document.getElementById(id); }
 function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
 function num(v){ v = parseFloat(v); return isFinite(v) ? v : 0; }
@@ -524,12 +545,13 @@ function buildPills(){
 }
 
 /* ---------------- render ---------------- */
+var lastMonthly = null;
 function render(){
   var a = args(), r = calc(a), pcp = S.mode==='pcp';
 
   /* what shows depends on the rate picked */
-  $('resHead').textContent = pcp ? 'Monthly payment' : 'Monthly payment \u2014 Hire Purchase';
-  $('hpLink').innerHTML = pcp ? 'Need a straight Hire Purchase figure? &rarr;' : '&larr; Back to PCP \u2014 Solutions';
+  $('resHead').textContent = pcp ? 'Monthly payment' : 'Monthly payment — Hire Purchase';
+  $('hpLink').innerHTML = pcp ? 'Need a straight Hire Purchase figure? &rarr;' : '&larr; Back to PCP — Solutions';
   var rInfo = rateInfo(S.apr);
   var ageFixed = !!(rInfo && rInfo.age);       /* 11.9% is a year old or less by definition */
   if(ageFixed) S.age = rInfo.age;
@@ -562,7 +584,7 @@ function render(){
     ['Amount of credit', money(r.credit,0), '']
   ];
   if(pcp) kv.push(['Optional final payment', money(r.finalDue,0),
-      over ? 'entered figure' : 'estimate \u2014 exact figure set by VWFS']);
+      over ? 'entered figure' : 'estimate — exact figure set by VWFS']);
   else kv.push(['Option to purchase fee', money(r.finalDue,0), 'payable with the last instalment']);
   if(showMore){
     kv.push(['Total amount payable', money(r.totalPayable,0), 'inc deposit']);
@@ -609,12 +631,30 @@ function render(){
   }
 
   /* panel readouts */
+  var pm = $('panelMonthly');
+  pm.textContent = money(r.monthly,2);
+  $('panelSub').textContent = C.prodOn
+    ? 'includes '+money(num(C.prod),0)+' adjustment'
+    : 'adjustment OFF — not in this figure';
+  if(lastMonthly !== null && Math.abs(lastMonthly - r.monthly) > 0.004){
+    pm.className = 'lv flash';
+    setTimeout(function(){ pm.className='lv'; }, 220);
+  }
+  lastMonthly = r.monthly;
+
+  $('prodOnBtn').className  = C.prodOn ? 'on' : '';
+  $('prodOffBtn').className = C.prodOn ? '' : 'on';
+  $('prodState').innerHTML = C.prodOn
+    ? 'Included — it is added to the amount financed, so the monthly above moves as you type.'
+    : '<b style="color:var(--warn)">Currently off.</b> Nothing you type here will change the monthly until you switch it back to Included.';
+
   $('rvPctLabel').textContent = rvPct().toFixed(1)+'% · '+money(estGmfv(),0);
   $('rvHint').innerHTML = over
     ? 'Currently overridden by the figure below — clear it to go back to the estimate.'
     : 'Estimated from a '+(S.cond==='used'?'used ':'new ')+(S.fuel==='ev'?'electric ':'petrol/diesel ')+
       'residual curve at '+S.miles.toLocaleString('en-GB')+' miles a year over '+S.term+' months. Nudge it if VWFS is running higher or lower.';
   syncInput('prodAmt',C.prod); syncInput('fee',C.fee); syncInput('excess',C.excess);
+  syncInput('gmfvOver',C.gmfvOver);
   $('rvTweak').value = C.rvTweak;
 
   /* warnings */
@@ -640,21 +680,25 @@ function render(){
 function syncInput(id,v){
   var el = $(id);
   if(document.activeElement === el) return;
+  if(id==='gmfvOver'){ el.value = (v===''||v===null||v===undefined) ? '' : v; return; }
   el.value = (v===0 && (id==='px'||id==='contrib'||id==='target')) ? '' : v;
 }
 
 /* ---------------- wiring ---------------- */
-function bindNum(id, key, store){
-  $(id).addEventListener('input', function(){
-    (store||S)[key] = num(this.value);
-    render();
-  });
+/* inC=true means the value lives on C. Look C up at event time, never
+   capture the object, so a settings reset can't orphan the handler. */
+function bindNum(id, key, inC){
+  var el = $(id);
+  function apply(){ (inC ? C : S)[key] = num(el.value); render(); }
+  el.addEventListener('input', apply);
+  el.addEventListener('change', apply);
 }
 bindNum('price','price'); bindNum('dep','dep'); bindNum('px','px');
 bindNum('contrib','contrib'); bindNum('target','target');
-bindNum('prodAmt','prod',C); bindNum('fee','fee',C); bindNum('excess','excess',C);
+bindNum('prodAmt','prod',true); bindNum('fee','fee',true); bindNum('excess','excess',true);
 
 $('gmfvOver').addEventListener('input', function(){ C.gmfvOver = this.value; render(); });
+$('gmfvOver').addEventListener('change', function(){ C.gmfvOver = this.value; render(); });
 $('rvTweak').addEventListener('input', function(){ C.rvTweak = num(this.value); render(); });
 $('aprSlider').addEventListener('input', function(){ S.apr = num(this.value); render(); });
 
@@ -665,12 +709,15 @@ $('mileSlider').addEventListener('input', function(){ S.miles = num(this.value);
 $('moreBtn').onclick = function(){ showMore = !showMore; render(); };
 
 $('pDot').onclick = function(){ C.prodOn = !C.prodOn; render(); };
+$('prodOnBtn').onclick  = function(){ C.prodOn = true;  render(); };
+$('prodOffBtn').onclick = function(){ C.prodOn = false; render(); };
 
 $('resetBtn').onclick = function(){
   var keep = {mode:S.mode, cond:S.cond, fuel:S.fuel, apr:S.apr, term:S.term, miles:S.miles};
-  S = clone(DEF_S);
-  for(var k in keep) S[k]=keep[k];
-  S.price=0; S.dep=0;
+  var fresh = clone(DEF_S);
+  for(var k in keep) fresh[k]=keep[k];
+  fresh.price=0; fresh.dep=0;
+  fill(S, fresh);
   C.gmfvOver='';
   $('gmfvOver').value='';
   ['price','dep','px','contrib','target'].forEach(function(i){ $(i).value=''; });
@@ -695,7 +742,7 @@ $('copyBtn').onclick = function(){
   L.push('MONTHLY               '+money(r.monthly,2));
   if(pcp) L.push('Est. final payment    '+money(r.finalDue,0));
   L.push('');
-  if(pcp) L.push('The final payment is an estimate \u2014 the exact figure comes from Volkswagen Financial Services.');
+  if(pcp) L.push('The final payment is an estimate — the exact figure comes from Volkswagen Financial Services.');
   L.push('Indicative figures, subject to status and a full quotation.');
   var txt = L.join('\n');
   var done = function(){ toast('Quote copied'); };
@@ -729,10 +776,27 @@ function toast(m){
   el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 })();
 function openPanel(){ $('scrim').className='scrim show'; $('panel').className='sheetp show'; render(); }
-function closePanel(){ $('scrim').className='scrim'; $('panel').className='sheetp'; }
+function closePanel(){
+  /* pull whatever is sitting in the focused field into state first, then
+     drop focus so the next render is free to rewrite every input */
+  var el = document.activeElement;
+  if(el && el.tagName === 'INPUT'){
+    if(el.id === 'prodAmt')  C.prod    = num(el.value);
+    if(el.id === 'fee')      C.fee     = num(el.value);
+    if(el.id === 'excess')   C.excess  = num(el.value);
+    if(el.id === 'gmfvOver') C.gmfvOver = el.value;
+    if(el.blur) el.blur();
+  }
+  $('scrim').className='scrim'; $('panel').className='sheetp';
+  render();
+}
 $('scrim').onclick = closePanel;
 $('closePanel').onclick = closePanel;
-$('defaultsBtn').onclick = function(){ C = clone(DEF_C); $('gmfvOver').value=''; render(); };
+$('defaultsBtn').onclick = function(){
+  fill(C, clone(DEF_C));
+  $('gmfvOver').value='';
+  render();
+};
 
 render();
 })();
