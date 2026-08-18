@@ -181,7 +181,7 @@ td b{font-weight:700}
 
 <header>
   <div class="hd">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+    <svg class="mark" id="badgeTouch" viewBox="0 0 100 100" aria-hidden="true">
       <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="5"/>
       <path d="M35 23 L50 52 L65 23" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M21 41 L34 78 L50 47 L66 78 L79 41" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -377,9 +377,14 @@ var RATES = [
   {apr:3.5,  cond:'new',  fuel:'ev'},
   {apr:7.9,  cond:'new',  fuel:'ice'},
   {apr:8.5,  cond:'new',  fuel:'ice'},
-  {apr:11.9, cond:'used', fuel:null},
-  {apr:13.9, cond:'used', fuel:null}
+  /* 11.9% only qualifies up to a year old, so there is nothing to ask */
+  {apr:11.9, cond:'used', fuel:null, age:1},
+  {apr:13.9, cond:'used', fuel:null, minAge:2}
 ];
+function rateInfo(apr){
+  for(var k=0;k<RATES.length;k++) if(Math.abs(RATES[k].apr-apr)<0.001) return RATES[k];
+  return null;
+}
 
 var TERMS = [24,36,42,48,60];            /* every term the residual table covers */
 var TERMS_PCP = [24,36,42,48];
@@ -496,8 +501,10 @@ function buildPills(){
     function(it){ return it.v===S.miles; },
     function(it){ S.miles=it.v; render(); });
 
+  var ri = rateInfo(S.apr), minA = (ri && ri.minAge) ? ri.minAge : 1;
   pills($('agePills'),
-    AGES.map(function(a){ return {v:a,label:a+(a===6?'+ yr':' yr')}; }),
+    AGES.filter(function(a){ return a >= minA; })
+        .map(function(a){ return {v:a,label:a+(a===6?'+ yr':' yr')}; }),
     function(it){ return it.v===S.age; },
     function(it){ S.age=it.v; render(); });
 
@@ -509,6 +516,8 @@ function buildPills(){
       if(it.v.cond==='used' && S.cond!=='used') S.fuel='ice';
       S.cond = it.v.cond;
       if(it.v.fuel) S.fuel = it.v.fuel;
+      if(it.v.age) S.age = it.v.age;
+      if(it.v.minAge && S.age < it.v.minAge) S.age = it.v.minAge;
       C.gmfvOver=''; $('gmfvOver').value='';
       render();
     });
@@ -521,7 +530,10 @@ function render(){
   /* what shows depends on the rate picked */
   $('resHead').textContent = pcp ? 'Monthly payment' : 'Monthly payment \u2014 Hire Purchase';
   $('hpLink').innerHTML = pcp ? 'Need a straight Hire Purchase figure? &rarr;' : '&larr; Back to PCP \u2014 Solutions';
-  $('ageWrap').style.display = S.cond==='used' ? '' : 'none';
+  var rInfo = rateInfo(S.apr);
+  var ageFixed = !!(rInfo && rInfo.age);       /* 11.9% is a year old or less by definition */
+  if(ageFixed) S.age = rInfo.age;
+  $('ageWrap').style.display = (S.cond==='used' && !ageFixed) ? '' : 'none';
   $('usedFuelWrap').style.display = S.cond==='used' ? '' : 'none';
   $('uIce').className = S.fuel==='ice'?'on':''; $('uEv').className = S.fuel==='ev'?'on':'';
   $('mileWrap').style.display = pcp ? '' : 'none';
@@ -703,10 +715,10 @@ function toast(m){
   clearTimeout(tt); tt=setTimeout(function(){ el.className='toast'; },1600);
 }
 
-/* long press on the brand opens the settings sheet */
+/* short press-and-hold on the badge opens the settings sheet */
 (function(){
-  var timer=null, moved=false, el=$('brandTouch');
-  function start(){ moved=false; timer=setTimeout(function(){ if(!moved) openPanel(); }, 650); }
+  var timer=null, moved=false, el=$('badgeTouch');
+  function start(){ moved=false; timer=setTimeout(function(){ if(!moved) openPanel(); }, 320); }
   function cancel(){ clearTimeout(timer); }
   el.addEventListener('touchstart', start, {passive:true});
   el.addEventListener('touchmove', function(){ moved=true; cancel(); }, {passive:true});
