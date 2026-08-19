@@ -41,8 +41,15 @@ header{
   position:sticky; top:0; z-index:40;
 }
 .hd{max-width:760px;margin:0 auto;padding:0 var(--pad) 12px;display:flex;align-items:center;gap:12px}
-.mark{width:38px;height:38px;flex:0 0 38px;user-select:none}
-.brand{line-height:1.15}
+.mark{
+  width:38px;height:38px;flex:0 0 38px;
+  /* 20px of invisible padding all round pulled back with a negative margin:
+     a 58px tap target that still sits where a 38px badge would */
+  box-sizing:content-box;padding:10px;margin:-10px;
+  cursor:pointer;touch-action:manipulation;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
+}
+.brand{line-height:1.15;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .brand b{display:block;font-size:15px;font-weight:600;letter-spacing:.02em}
 .brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
 .nav{max-width:760px;margin:0 auto;padding:0 var(--pad);display:flex;gap:2px}
@@ -191,6 +198,8 @@ td b{font-weight:700}
 <header>
   <div class="hd">
     <svg class="mark" id="badgeTouch" viewBox="0 0 100 100" aria-hidden="true">
+      <!-- invisible hit area: without it only the white strokes are tappable -->
+      <rect x="0" y="0" width="100" height="100" fill="#000" fill-opacity="0"/>
       <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="5"/>
       <path d="M35 23 L50 52 L65 23" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M21 41 L34 78 L50 47 L66 78 L79 41" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -762,17 +771,35 @@ function toast(m){
   clearTimeout(tt); tt=setTimeout(function(){ el.className='toast'; },1600);
 }
 
-/* short press-and-hold on the badge opens the settings sheet */
+/* the badge opens the settings sheet.
+   On a phone or tablet: one tap. On a mouse: press and hold for a third of a
+   second, so it stays out of the way of an accidental click on a desktop. */
 (function(){
-  var timer=null, moved=false, el=$('badgeTouch');
-  function start(){ moved=false; timer=setTimeout(function(){ if(!moved) openPanel(); }, 320); }
-  function cancel(){ clearTimeout(timer); }
-  el.addEventListener('touchstart', start, {passive:true});
-  el.addEventListener('touchmove', function(){ moved=true; cancel(); }, {passive:true});
-  el.addEventListener('touchend', cancel);
-  el.addEventListener('mousedown', start);
-  el.addEventListener('mouseup', cancel);
-  el.addEventListener('mouseleave', cancel);
+  var el=$('badgeTouch'), timer=null, moved=false, sx=0, sy=0;
+  var touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+  if(touch){
+    el.addEventListener('touchstart', function(e){
+      moved=false;
+      var t=e.touches[0]; sx=t.clientX; sy=t.clientY;
+    }, {passive:true});
+    el.addEventListener('touchmove', function(e){
+      var t=e.touches[0];
+      /* only count it as a scroll if the finger has actually travelled */
+      if(Math.abs(t.clientX-sx)>10 || Math.abs(t.clientY-sy)>10) moved=true;
+    }, {passive:true});
+    el.addEventListener('touchend', function(e){
+      if(moved) return;
+      e.preventDefault();          /* kills the ghost click and the iOS callout */
+      openPanel();
+    });
+  }else{
+    el.addEventListener('mousedown', function(){
+      timer=setTimeout(openPanel, 320);
+    });
+    el.addEventListener('mouseup',    function(){ clearTimeout(timer); });
+    el.addEventListener('mouseleave', function(){ clearTimeout(timer); });
+  }
   el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 })();
 function openPanel(){ $('scrim').className='scrim show'; $('panel').className='sheetp show'; render(); }
