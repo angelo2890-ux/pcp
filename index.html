@@ -41,15 +41,8 @@ header{
   position:sticky; top:0; z-index:40;
 }
 .hd{max-width:760px;margin:0 auto;padding:0 var(--pad) 12px;display:flex;align-items:center;gap:12px}
-.mark{
-  width:38px;height:38px;flex:0 0 38px;
-  /* 20px of invisible padding all round pulled back with a negative margin:
-     a 58px tap target that still sits where a 38px badge would */
-  box-sizing:content-box;padding:10px;margin:-10px;
-  cursor:pointer;touch-action:manipulation;
-  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
-}
-.brand{line-height:1.15;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.mark{width:38px;height:38px;flex:0 0 38px;user-select:none}
+.brand{line-height:1.15}
 .brand b{display:block;font-size:15px;font-weight:600;letter-spacing:.02em}
 .brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
 .nav{max-width:760px;margin:0 auto;padding:0 var(--pad);display:flex;gap:2px}
@@ -65,21 +58,6 @@ header{
   padding:16px;margin-top:14px
 }
 .card.flush{padding:0;overflow:hidden}
-
-/* ---------- live monthly bar (shows while a figure is being typed) ---------- */
-.livebar{
-  display:none;align-items:baseline;justify-content:space-between;gap:12px;
-  margin:14px -16px -16px;padding:11px 16px;
-  background:var(--blue);color:#fff;
-  border-radius:0 0 5px 5px
-}
-.livebar.show{display:flex}
-.lb-l{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
-.lb-r{display:flex;align-items:baseline;gap:10px;min-width:0}
-.lb-v{font-size:22px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.lb-d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:#9FC6E4;white-space:nowrap}
-.lb-d.up{color:#FF9E80}
-.lb-d.down{color:#6EE7A8}
 .ch{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
@@ -213,8 +191,6 @@ td b{font-weight:700}
 <header>
   <div class="hd">
     <svg class="mark" id="badgeTouch" viewBox="0 0 100 100" aria-hidden="true">
-      <!-- invisible hit area: without it only the white strokes are tappable -->
-      <rect x="0" y="0" width="100" height="100" fill="#000" fill-opacity="0"/>
       <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="5"/>
       <path d="M35 23 L50 52 L65 23" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M21 41 L34 78 L50 47 L66 78 L79 41" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -265,15 +241,6 @@ td b{font-weight:700}
     <div class="fld" id="usedFuelWrap" style="display:none">
       <label>Fuel</label>
       <div class="seg sm" style="max-width:320px"><button id="uIce" class="on">Petrol / Diesel</button><button id="uEv">Electric</button></div>
-    </div>
-
-    <!-- only on screen while a figure above is being typed -->
-    <div class="livebar" id="liveBar" aria-live="polite">
-      <span class="lb-l">Monthly</span>
-      <span class="lb-r">
-        <span class="lb-d" id="liveDelta"></span>
-        <span class="lb-v" id="liveMonthly">&pound;0</span>
-      </span>
     </div>
   </div>
 
@@ -407,34 +374,14 @@ td b{font-weight:700}
 /* ---------------------------------------------------------------
    Residual value tables. Percentage of the cash price that VWFS
    sets as the guaranteed future value, at 10,000 miles a year.
-
-   Petrol/diesel: calibrated against Golf and Tiguan representative
-   examples. Electric: recalibrated Aug 2026 against four published
-   Solutions examples from the Q3 2026 campaign —
-
-     ID.3 Match Pure 52kWh    £32,220 OTR, OFP £10,732.50, 49mth/6k
-     ID.4 Match Pure 58kWh    £39,590 OTR, OFP £11,947.50, 49mth/6k
-     ID.7 Pro Match Plus      £51,445 OTR, OFP £17,265.60, 48mth/8k
-     ID.7 Tourer Pro Match S  £52,225 OTR, OFP £18,012.60, 48mth/10k
-
-   Normalised to 48 months and 10,000 miles those land at 33.2, 28.5,
-   32.0 and 34.5 per cent. The old table sat at 27 and was quoting
-   every one of them too dear — up to £78 a month out on the ID.7.
-   32% is the anchor that minimises the error across all four.
-
-   The spread is real: the ID.7 pair genuinely hold value better than
-   the ID.4. One curve cannot sit on all of them, so expect roughly
-   +£8/mth on an ID.3, -£25 on an ID.4, dead on an ID.7. Nudge the
-   residual tweak in settings for a particular car, or better, type
-   the real figure into the final-payment override once you have it.
+   Calibrated against published Volkswagen representative examples
+   (Golf, Tiguan, ID.3 - Q3 2026 campaign).
 ----------------------------------------------------------------*/
 var RV = {
   new_ice : {24:57.0, 36:47.0, 42:43.0, 48:39.5, 60:32.0},
-  new_ev  : {24:51.0, 36:39.5, 42:35.5, 48:32.0, 60:25.5},
+  new_ev  : {24:44.0, 36:34.0, 42:30.5, 48:27.0, 60:21.0},
   used_ice: {24:62.0, 36:52.0, 42:48.0, 48:44.0, 60:37.0},
-  /* no published used-EV examples to work from; shifted by the same
-     amount as the new-EV line, holding the gap the old table used */
-  used_ev : {24:59.0, 36:46.5, 42:42.0, 48:38.0, 60:30.5}
+  used_ev : {24:52.0, 36:41.0, 42:37.0, 48:33.0, 60:26.0}
 };
 
 /* Each rate implies the car, so picking one silently sets condition
@@ -626,7 +573,6 @@ function render(){
   /* headline */
   $('monthly').textContent = money(r.monthly,2);
   $('perNote').textContent = 'a month';
-  paintLive(r.monthly);
   var bits = [r.n + ' payments', S.term + ' month term', num(S.apr).toFixed(1)+'% APR'];
   if(pcp) bits.push(S.miles.toLocaleString('en-GB')+' miles a year');
   $('subline').textContent = bits.join('  ·  ');
@@ -674,22 +620,11 @@ function render(){
     var creditNeeded = tgt*r.af + pvFinal;
     var needed = a.price + a.prod - creditNeeded - a.px - a.contrib;
     $('needDep').value = needed<=0 ? '0' : Math.ceil(needed).toLocaleString('en-GB');
-    /* `needed` is already the customer's own cash — the part exchange and the
-       contribution have been taken off above. Don't subtract them a second
-       time; add them back to state the total deposit. */
-    var cash = Math.ceil(needed);
-    var already = a.px + a.contrib;
-    var bitsIn = [];
-    if(a.px>0)      bitsIn.push('part exchange');
-    if(a.contrib>0) bitsIn.push('contribution');
-    var lead = 'To land on <b>'+money(tgt,0)+'</b> a month over '+S.term+
-               ' months at '+num(S.apr).toFixed(1)+'% they need <b>'+money(cash,0)+'</b> ';
     $('solveHint').innerHTML = needed<=0
       ? 'Nothing down gets there — at zero deposit it comes out at <b>'+money(calc(args({dep:0})).monthly,2)+'</b> a month.'
-      : already>0
-        ? lead+'of their own money — that makes '+money(cash+already,0)+
-          ' total deposit once the '+money(already,0)+' '+bitsIn.join(' and ')+' goes in.'
-        : lead+'down.';
+      : 'To land on <b>'+money(tgt,0)+'</b> a month over '+S.term+' months at '+num(S.apr).toFixed(1)+
+        '% they need <b>'+money(Math.ceil(needed),0)+'</b> in total — that’s '+
+        money(Math.max(0,Math.ceil(needed)-a.px-a.contrib),0)+' of their own money after part exchange and contribution.';
   } else {
     $('needDep').value = '';
     $('solveHint').textContent = 'Type the monthly they have in mind and this shows the deposit that gets there.';
@@ -748,42 +683,6 @@ function syncInput(id,v){
   if(id==='gmfvOver'){ el.value = (v===''||v===null||v===undefined) ? '' : v; return; }
   el.value = (v===0 && (id==='px'||id==='contrib'||id==='target')) ? '' : v;
 }
-
-/* ---------------- live monthly bar ----------------
-   The result card is off the bottom of a phone screen once the keyboard is
-   up, so while one of the deal figures is being typed the monthly is
-   mirrored in a bar at the foot of that card, with the change since the
-   edit started alongside it. */
-var LIVE_FIELDS = ['price','dep','px','contrib'];
-var liveBase = null, liveHide = null;
-
-function paintLive(monthly){
-  if(liveBase == null) return;
-  $('liveMonthly').textContent = money(monthly,2);
-  var d = monthly - liveBase, el = $('liveDelta');
-  if(Math.abs(d) < 0.005){ el.textContent = ''; el.className = 'lb-d'; return; }
-  el.textContent = (d>0?'+':'\u2212') + money(Math.abs(d),2);
-  el.className = 'lb-d ' + (d>0 ? 'up' : 'down');
-}
-
-LIVE_FIELDS.forEach(function(id){
-  var el = $(id);
-  el.addEventListener('focus', function(){
-    clearTimeout(liveHide);
-    if(liveBase == null) liveBase = calc(args()).monthly;   /* baseline, once */
-    $('liveBar').className = 'livebar show';
-    paintLive(calc(args()).monthly);
-  });
-  el.addEventListener('blur', function(){
-    /* a short grace period so hopping between the four fields doesn't
-       flicker the bar or reset the baseline */
-    clearTimeout(liveHide);
-    liveHide = setTimeout(function(){
-      $('liveBar').className = 'livebar';
-      liveBase = null;
-    }, 180);
-  });
-});
 
 /* ---------------- wiring ---------------- */
 /* inC=true means the value lives on C. Look C up at event time, never
@@ -863,35 +762,17 @@ function toast(m){
   clearTimeout(tt); tt=setTimeout(function(){ el.className='toast'; },1600);
 }
 
-/* the badge opens the settings sheet.
-   On a phone or tablet: one tap. On a mouse: press and hold for a third of a
-   second, so it stays out of the way of an accidental click on a desktop. */
+/* short press-and-hold on the badge opens the settings sheet */
 (function(){
-  var el=$('badgeTouch'), timer=null, moved=false, sx=0, sy=0;
-  var touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-
-  if(touch){
-    el.addEventListener('touchstart', function(e){
-      moved=false;
-      var t=e.touches[0]; sx=t.clientX; sy=t.clientY;
-    }, {passive:true});
-    el.addEventListener('touchmove', function(e){
-      var t=e.touches[0];
-      /* only count it as a scroll if the finger has actually travelled */
-      if(Math.abs(t.clientX-sx)>10 || Math.abs(t.clientY-sy)>10) moved=true;
-    }, {passive:true});
-    el.addEventListener('touchend', function(e){
-      if(moved) return;
-      e.preventDefault();          /* kills the ghost click and the iOS callout */
-      openPanel();
-    });
-  }else{
-    el.addEventListener('mousedown', function(){
-      timer=setTimeout(openPanel, 320);
-    });
-    el.addEventListener('mouseup',    function(){ clearTimeout(timer); });
-    el.addEventListener('mouseleave', function(){ clearTimeout(timer); });
-  }
+  var timer=null, moved=false, el=$('badgeTouch');
+  function start(){ moved=false; timer=setTimeout(function(){ if(!moved) openPanel(); }, 320); }
+  function cancel(){ clearTimeout(timer); }
+  el.addEventListener('touchstart', start, {passive:true});
+  el.addEventListener('touchmove', function(){ moved=true; cancel(); }, {passive:true});
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
   el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 })();
 function openPanel(){ $('scrim').className='scrim show'; $('panel').className='sheetp show'; render(); }
