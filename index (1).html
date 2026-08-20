@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quote &middot; Group 1 Volkswagen Chelmsford</title>
+<meta name="description" content="Quick indicative PCP and HP quotes.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quote">
+<meta name="theme-color" content="#001E50">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#001E50; --blue-2:#00437A; --cyan:#00B0F0; --cyan-d:#0084C8;
+  --ink:#001E50; --muted:#6A767D; --line:#DFE4E8; --line-2:#EEF1F2;
+  --bg:#F2F4F5; --card:#FFFFFF; --good:#00A03E; --warn:#C7401F;
+  --pad:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px; line-height:1.45; -webkit-text-size-adjust:100%;
+  overscroll-behavior-y:none;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 var(--pad) 56px}
+
+/* ---------- header ---------- */
+header{
+  background:var(--blue); color:#fff;
+  padding:calc(env(safe-area-inset-top) + 12px) 0 0;
+  position:sticky; top:0; z-index:40;
+}
+.hd{max-width:760px;margin:0 auto;padding:0 var(--pad) 12px;display:flex;align-items:center;gap:12px}
+.mark{width:38px;height:38px;flex:0 0 38px;user-select:none}
+.brand{line-height:1.15}
+.brand b{display:block;font-size:15px;font-weight:600;letter-spacing:.02em}
+.brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
+.nav{max-width:760px;margin:0 auto;padding:0 var(--pad);display:flex;gap:2px}
+.nav a{
+  color:#9FC6E4;text-decoration:none;font-size:13px;font-weight:500;
+  padding:9px 14px;border-bottom:3px solid transparent;letter-spacing:.02em
+}
+.nav a.on{color:#fff;border-bottom-color:var(--cyan)}
+
+/* ---------- sticky monthly (rides with the header) ---------- */
+.stick{background:#00163C;border-top:1px solid rgba(255,255,255,.14);display:none}
+.stick.show{display:block}
+.sb{
+  max-width:760px;margin:0 auto;padding:8px var(--pad) 9px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer
+}
+.sbk{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#9FC6E4;line-height:1.3}
+.sbk small{display:block;font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:none;color:#7FA8CC;margin-top:1px}
+.sbv{font-size:23px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1;white-space:nowrap;transition:color .12s}
+.sbv.flash{color:var(--cyan)}
+@media(min-width:900px){.sb{max-width:1100px}}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:6px;
+  padding:16px;margin-top:14px
+}
+.card.flush{padding:0;overflow:hidden}
+.ch{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:520px){.row3{grid-template-columns:1fr 1fr}}
+
+/* ---------- fields ---------- */
+.fld{margin-bottom:12px}
+.fld:last-child{margin-bottom:0}
+label{display:block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:4px;background:#fff;overflow:hidden}
+.inp:focus-within{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,176,240,.16)}
+.inp .pfx,.inp .sfx{padding:0 9px;color:var(--muted);font-size:14px;font-weight:500;background:var(--line-2);align-self:stretch;display:flex;align-items:center}
+.inp .sfx{border-left:1px solid var(--line)}
+.inp .pfx{border-right:1px solid var(--line)}
+input[type=number],input[type=text]{
+  border:0;outline:0;width:100%;padding:11px 10px;font:inherit;font-weight:600;
+  font-size:16px;color:var(--ink);background:transparent;min-width:0
+}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
+/* ---------- pills ---------- */
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  padding:9px 13px;border:1px solid var(--line);background:#fff;color:var(--ink);
+  border-radius:4px;line-height:1.1;transition:.12s
+}
+.pill:hover{border-color:var(--cyan)}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.pill small{display:block;font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.62;margin-top:3px}
+.pill.on small{opacity:.75}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--line-2)}
+.seg button{
+  flex:1;font:inherit;font-size:14px;font-weight:600;padding:10px 6px;border:0;cursor:pointer;
+  background:transparent;color:var(--muted)
+}
+.seg button.on{background:var(--blue);color:#fff}
+.seg.sm button{font-size:12.5px;padding:7px 4px}
+
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:22px;background:transparent;margin:0
+}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 1px var(--line);margin-top:-8px}
+input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border:3px solid #fff;border-radius:50%;background:var(--blue)}
+
+/* ---------- result ---------- */
+.result{background:var(--blue);color:#fff;border-color:var(--blue);position:relative}
+.result .ch{color:#9FC6E4}
+.big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big .amt{font-size:46px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.big .per{font-size:14px;color:#9FC6E4;font-weight:500}
+.subline{font-size:13px;color:#9FC6E4;margin-top:8px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.14);border-radius:4px;overflow:hidden;margin-top:16px}
+.kv div{background:var(--blue);padding:9px 11px}
+.kv .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9FC6E4}
+.kv .v{font-size:16px;font-weight:600;margin-top:1px}
+.kv .v small{display:block;font-size:11px;font-weight:500;color:#9FC6E4;letter-spacing:.04em;margin-top:1px}
+.dot{
+  position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;
+  border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center
+}
+.dot i{display:block;width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(159,198,228,.55);background:rgba(159,198,228,.55);transition:.15s}
+.dot.off i{background:transparent}
+.btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{
+  font:inherit;font-size:13.5px;font-weight:600;padding:10px 14px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff
+}
+.btn.solid{background:var(--cyan);border-color:var(--cyan);color:var(--blue)}
+.btn:active{opacity:.75}
+.btn.dark{border-color:var(--line);color:var(--blue);background:#fff}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-2)}
+th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;background:#FAFBFB}
+th:first-child,td:first-child{text-align:left;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tr.here td{background:#EAF6FD;font-weight:600}
+td b{font-weight:700}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.warnbox{background:#FDF3F0;border:1px solid #F0D2C9;color:#8A2B12;font-size:12.5px;padding:9px 11px;border-radius:4px;margin-top:10px}
+.disc{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:18px}
+.disc b{color:var(--ink)}
+.gmfv-edit{background:none;border:0;padding:0;font:inherit;color:var(--cyan);text-decoration:underline;cursor:pointer;font-size:11px}
+
+/* ---------- hidden panel ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,30,80,.55);z-index:90;display:none}
+.scrim.show{display:block}
+.sheetp{
+  position:fixed;left:0;right:0;bottom:0;z-index:100;background:#fff;border-radius:10px 10px 0 0;
+  padding:18px var(--pad) calc(env(safe-area-inset-bottom) + 22px);max-height:88vh;overflow:auto;
+  max-width:760px;margin:0 auto;display:none
+}
+.sheetp.show{display:block}
+.sheetp h3{margin:0 0 4px;font-size:16px}
+.livebar{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  background:var(--blue);color:#fff;border-radius:6px;padding:10px 13px;margin:12px 0 16px;
+  position:sticky;top:-18px;z-index:5
+}
+.livebar .lk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9FC6E4}
+.livebar .lv{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1;transition:color .12s}
+.livebar .lv.flash{color:var(--cyan)}
+.livebar .ls{display:block;font-size:10.5px;font-weight:500;color:#9FC6E4;letter-spacing:.04em;margin-top:3px;text-align:right}
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:var(--blue);color:#fff;
+  padding:10px 18px;border-radius:20px;font-size:13.5px;font-weight:600;z-index:200;opacity:0;
+  transition:opacity .2s;pointer-events:none
+}
+.toast.show{opacity:1}
+
+.hplink{display:block;margin-top:14px;background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.morelink{background:none;border:0;padding:0;margin-top:12px;font:inherit;font-size:12px;color:#9FC6E4;text-decoration:underline;cursor:pointer}
+.kv .wide{grid-column:1/-1}
+.cols>div{min-width:0}
+@media(min-width:900px){
+  .wrap{max-width:1100px}
+  .hd,.nav{max-width:1100px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <svg class="mark" id="badgeTouch" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="5"/>
+      <path d="M35 23 L50 52 L65 23" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 41 L34 78 L50 47 L66 78 L79 41" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="brand" id="brandTouch">
+      <b>Volkswagen Chelmsford</b>
+      <span>Group&nbsp;1 &middot; Quotation tool</span>
+    </div>
+  </div>
+  <nav class="nav">
+    <a href="index.html" class="on">Quote</a>
+    <a href="overtime.html">Over time</a>
+  </nav>
+  <div class="stick" id="stickBar">
+    <div class="sb" id="stickTap">
+      <span class="sbk">Monthly<small id="stickSub"></small></span>
+      <span class="sbv" id="stickMonthly">&pound;0</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="cols">
+<div>
+
+  <!-- ============ THE DEAL ============ -->
+  <div class="card">
+    <div class="ch">The deal</div>
+
+    <div class="row">
+      <div class="fld">
+        <label>On the road price</label>
+        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="price" inputmode="numeric" step="100" min="0"></div>
+      </div>
+      <div class="fld">
+        <label>Customer deposit</label>
+        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="dep" inputmode="numeric" step="100" min="0"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fld">
+        <label>Part exchange <span style="text-transform:none;letter-spacing:0">(equity)</span></label>
+        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="px" inputmode="numeric" step="100"></div>
+      </div>
+      <div class="fld">
+        <label>Deposit contribution</label>
+        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="contrib" inputmode="numeric" step="100" min="0"></div>
+      </div>
+    </div>
+    <div class="fld" id="ageWrap" style="display:none">
+      <label>Age of car now</label>
+      <div class="pills" id="agePills"></div>
+    </div>
+    <div class="fld" id="usedFuelWrap" style="display:none">
+      <label>Fuel</label>
+      <div class="seg sm" style="max-width:320px"><button id="uIce" class="on">Petrol / Diesel</button><button id="uEv">Electric</button></div>
+    </div>
+  </div>
+
+  <!-- ============ TERM & MILEAGE ============ -->
+  <div class="card">
+    <div class="ch" id="termCardHead">Term &amp; mileage</div>
+    <div class="fld">
+      <label>Term</label>
+      <div class="pills" id="termPills"></div>
+    </div>
+    <div class="fld" id="mileWrap">
+      <label>Miles a year</label>
+      <div class="pills" id="milePills"></div>
+      <input type="range" id="mileSlider" min="4000" max="30000" step="1000" style="margin-top:8px">
+    </div>
+  </div>
+
+  <!-- ============ RATE ============ -->
+  <div class="card">
+    <div class="ch">Rate</div>
+    <div class="pills" id="ratePills" style="margin-bottom:12px"></div>
+    <label style="display:flex;justify-content:space-between;align-items:baseline">
+      <span>Or set it by hand</span>
+      <span id="aprRead" style="font-size:15px;font-weight:700;color:var(--ink);letter-spacing:0"></span>
+    </label>
+    <input type="range" id="aprSlider" min="0" max="20" step="0.1">
+    <button class="hplink" id="hpLink">Need a straight Hire Purchase figure? &rarr;</button>
+  </div>
+
+</div>
+<div>
+
+  <!-- ============ RESULT ============ -->
+  <div class="card result" id="result">
+    <button class="dot" id="pDot" aria-label="."><i></i></button>
+    <div class="ch" id="resHead">Monthly payment</div>
+    <div class="big" id="bigLine"><span class="amt" id="monthly">&pound;0</span><span class="per" id="perNote"></span></div>
+    <div class="subline" id="subline"></div>
+    <div class="kv" id="kvGrid"></div>
+    <button class="morelink" id="moreBtn">More detail</button>
+    <div class="btnrow">
+      <button class="btn solid" id="copyBtn">Copy quote</button>
+      <button class="btn" id="resetBtn">Clear</button>
+    </div>
+  </div>
+
+  <!-- ============ DEPOSIT / MONTHLY SOLVER ============ -->
+  <div class="card">
+    <div class="ch">Work backwards</div>
+    <div class="row">
+      <div class="fld">
+        <label>Customer wants to pay</label>
+        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="target" inputmode="numeric" step="10" min="0"><span class="sfx">/mth</span></div>
+      </div>
+      <div class="fld">
+        <label>Deposit needed</label>
+        <div class="inp" style="background:var(--line-2)"><span class="pfx">&pound;</span><input type="text" id="needDep" readonly style="font-weight:700"></div>
+      </div>
+    </div>
+    <div class="hint" id="solveHint"></div>
+  </div>
+
+  <!-- ============ TERM COMPARISON ============ -->
+  <div class="card flush">
+    <div class="tw">
+      <table id="termTable">
+        <thead><tr><th>Term</th><th>Monthly</th><th id="thBal">Est. final payment</th><th id="thTot" style="display:none">Total payable</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="disc" id="disc"></div>
+
+</div>
+</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheetp" id="panel">
+  <h3>Tool settings</h3>
+  <div class="hint" style="margin-bottom:0">Only you see this.</div>
+
+  <div class="livebar">
+    <span class="lk">Monthly<br>right now</span>
+    <span><span class="lv" id="panelMonthly">&pound;0</span><small class="ls" id="panelSub"></small></span>
+  </div>
+
+  <div class="fld">
+    <label>Adjustment amount</label>
+    <div class="inp"><span class="pfx">&pound;</span><input type="number" id="prodAmt" inputmode="numeric" step="50" min="0"></div>
+    <div class="seg sm" style="max-width:240px;margin-top:8px">
+      <button id="prodOnBtn">Included</button><button id="prodOffBtn">Off</button>
+    </div>
+    <div class="hint" id="prodState"></div>
+  </div>
+
+  <div class="fld">
+    <label>Final value used <span id="rvPctLabel" style="float:right;color:var(--ink);letter-spacing:0"></span></label>
+    <input type="range" id="rvTweak" min="-10" max="10" step="0.5">
+    <div class="hint" id="rvHint"></div>
+  </div>
+
+  <div class="fld">
+    <label>Override final payment (this quote only)</label>
+    <div class="inp"><span class="pfx">&pound;</span><input type="number" id="gmfvOver" inputmode="numeric" step="50" min="0" placeholder="leave blank to estimate"></div>
+  </div>
+
+  <div class="row">
+    <div class="fld">
+      <label>Option to purchase fee</label>
+      <div class="inp"><span class="pfx">&pound;</span><input type="number" id="fee" inputmode="numeric" step="1" min="0"></div>
+    </div>
+    <div class="fld">
+      <label>Excess mileage</label>
+      <div class="inp"><input type="number" id="excess" inputmode="decimal" step="0.1" min="0"><span class="sfx">p/mile</span></div>
+    </div>
+  </div>
+
+  <div class="btnrow">
+    <button class="btn dark" id="closePanel" style="flex:1;text-align:center">Done</button>
+    <button class="btn dark" id="defaultsBtn">Reset settings</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------
+   Residual value tables. Percentage of the cash price that VWFS
+   sets as the guaranteed future value, at 10,000 miles a year.
+   Calibrated against published Volkswagen representative examples
+   (Golf, Tiguan, ID.3 - Q3 2026 campaign).
+----------------------------------------------------------------*/
+var RV = {
+  new_ice : {24:57.0, 36:47.0, 42:43.0, 48:39.5, 60:32.0},
+  new_ev  : {24:44.0, 36:34.0, 42:30.5, 48:27.0, 60:21.0},
+  used_ice: {24:62.0, 36:52.0, 42:48.0, 48:44.0, 60:37.0},
+  used_ev : {24:52.0, 36:41.0, 42:37.0, 48:33.0, 60:26.0}
+};
+
+/* Each rate implies the car, so picking one silently sets condition
+   and fuel and the residual curve follows. 0 / 7.9 / 8.5 are the new
+   petrol-diesel campaign rates, 2.9 / 3.5 the new electric (ID) rates,
+   11.9 / 13.9 the used rates. Used asks age + fuel separately. */
+var RATES = [
+  {apr:0,    cond:'new',  fuel:'ice'},
+  {apr:2.9,  cond:'new',  fuel:'ev'},
+  {apr:3.5,  cond:'new',  fuel:'ev'},
+  {apr:7.9,  cond:'new',  fuel:'ice'},
+  {apr:8.5,  cond:'new',  fuel:'ice'},
+  /* 11.9% only qualifies up to a year old, so there is nothing to ask */
+  {apr:11.9, cond:'used', fuel:null, age:1},
+  {apr:13.9, cond:'used', fuel:null, minAge:2}
+];
+function rateInfo(apr){
+  for(var k=0;k<RATES.length;k++) if(Math.abs(RATES[k].apr-apr)<0.001) return RATES[k];
+  return null;
+}
+
+var TERMS = [24,36,42,48,60];            /* every term the residual table covers */
+var TERMS_PCP = [24,36,42,48];
+var TERMS_HP  = [24,36,48,60];
+function termList(){ return S.mode==='pcp' ? TERMS_PCP : TERMS_HP; }
+var MILES = [5000,8000,10000,12000,15000,20000];
+var AGES  = [1,2,3,4,5,6];
+
+var DEF_S = {mode:'pcp',cond:'new',fuel:'ice',price:29150,dep:3000,px:0,contrib:0,
+             term:48,miles:10000,apr:8.5,age:2,target:0};
+var DEF_C = {prod:1600,prodOn:true,rvTweak:0,gmfvOver:'',fee:10,excess:8};
+
+var S = load('g1quote_s', DEF_S);
+var C = load('g1quote_c', DEF_C);
+var showMore = false;   /* per-visit, never saved */
+
+function load(k,d){
+  try{ var r = JSON.parse(localStorage.getItem(k)); if(!r) return clone(d);
+       for(var p in d){ if(!(p in r)) r[p]=d[p]; } return r; }
+  catch(e){ return clone(d); }
+}
+function save(){
+  try{ localStorage.setItem('g1quote_s',JSON.stringify(S));
+       localStorage.setItem('g1quote_c',JSON.stringify(C)); }catch(e){}
+}
+function clone(o){ var r={}; for(var p in o) r[p]=o[p]; return r; }
+/* overwrite in place - never reassign S or C, or bound handlers end up
+   writing into an orphaned object and the screen stops responding */
+function fill(target, src){ for(var p in target) delete target[p];
+                            for(var q in src) target[q]=src[q]; return target; }
+function $(id){ return document.getElementById(id); }
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function num(v){ v = parseFloat(v); return isFinite(v) ? v : 0; }
+
+function money(v,dp){
+  dp = dp===undefined ? 0 : dp;
+  var s = Math.abs(v).toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  return (v<0?'-£':'£') + s;
+}
+
+/* ---------------- residual + payment maths ---------------- */
+function rvPct(){
+  var t = RV[S.cond + '_' + S.fuel];
+  var ks = TERMS, base;
+  var m = clamp(S.term, ks[0], ks[ks.length-1]);
+  for(var j=1;j<ks.length;j++){
+    if(m<=ks[j]){
+      var a=ks[j-1], b=ks[j];
+      base = t[a] + (t[b]-t[a])*(m-a)/(b-a);
+      break;
+    }
+  }
+  base += -((S.miles-10000)/1000) * 0.19 * (S.term/12);
+  if(S.cond==='used') base += (S.age-2)*1.4;
+  base += C.rvTweak;
+  return clamp(base, 8, 80);
+}
+function estGmfv(){
+  var over = parseFloat(C.gmfvOver);
+  if(isFinite(over) && over>0) return over;
+  return Math.round(S.price * rvPct()/100 / 5) * 5;
+}
+
+/* VWFS quote the APR rounded up; the rate actually applied is the
+   "fixed rate of interest" a touch below it (8.5% APR -> 8.46% fixed,
+   7.9% -> 7.85%). Backing that out of four published representative
+   examples lands consistently on APR minus ~0.03, which reproduces
+   Volkswagen's own monthly figures to within a couple of pence. */
+function rateOf(apr){ return Math.max(0, apr - 0.03); }
+
+function calc(o){
+  var i = Math.pow(1 + rateOf(o.apr)/100, 1/12) - 1;
+  var totalDep = o.dep + o.px + o.contrib;
+  var credit = Math.max(0, o.price - totalDep + o.prod);
+  var pcp = o.mode === 'pcp';
+  var n = pcp ? Math.max(1,o.term-1) : o.term;
+  var bal = pcp ? Math.min(o.gmfv, Math.max(0, credit - 100)) : 0;
+  var finalDue = bal + o.fee;
+  var disc = Math.pow(1+i, o.term);
+  var pvFinal = i===0 ? finalDue : finalDue/disc;
+  var af = i===0 ? n : (1 - Math.pow(1+i,-n))/i;
+  var monthly = Math.max(0, (credit - pvFinal)/af);
+  return {
+    i:i, af:af, n:n, credit:credit, totalDep:totalDep,
+    balloon:bal, finalDue:finalDue, monthly:monthly,
+    capped: pcp && o.gmfv > bal + 0.5,
+    totalPayable: totalDep + monthly*n + finalDue,
+    charges: monthly*n + finalDue - credit
+  };
+}
+function args(over){
+  var a = {mode:S.mode, price:num(S.price), dep:num(S.dep), px:num(S.px),
+           contrib:num(S.contrib), apr:num(S.apr), term:S.term,
+           gmfv:estGmfv(), fee:num(C.fee), prod: C.prodOn ? num(C.prod) : 0};
+  if(over) for(var p in over) a[p]=over[p];
+  return a;
+}
+
+/* ---------------- build the controls ---------------- */
+function pills(host, items, isOn, onPick){
+  host.innerHTML='';
+  items.forEach(function(it){
+    var b = document.createElement('button');
+    b.className = 'pill' + (isOn(it) ? ' on' : '');
+    b.innerHTML = it.label + (it.sub ? '<small>'+it.sub+'</small>' : '');
+    b.onclick = function(){ onPick(it); };
+    host.appendChild(b);
+  });
+}
+function buildPills(){
+  pills($('termPills'),
+    termList().map(function(t){ return {v:t,label:t+' mth'}; }),
+    function(it){ return it.v===S.term; },
+    function(it){ S.term=it.v; render(); });
+
+  pills($('milePills'),
+    MILES.map(function(m){ return {v:m,label:(m/1000)+'k'}; }),
+    function(it){ return it.v===S.miles; },
+    function(it){ S.miles=it.v; render(); });
+
+  var ri = rateInfo(S.apr), minA = (ri && ri.minAge) ? ri.minAge : 1;
+  pills($('agePills'),
+    AGES.filter(function(a){ return a >= minA; })
+        .map(function(a){ return {v:a,label:a+(a===6?'+ yr':' yr')}; }),
+    function(it){ return it.v===S.age; },
+    function(it){ S.age=it.v; render(); });
+
+  pills($('ratePills'),
+    RATES.map(function(r){ return {v:r,label:r.apr.toFixed(1)+'%'}; }),
+    function(it){ return Math.abs(it.v.apr - S.apr) < 0.001; },
+    function(it){
+      S.apr = it.v.apr;
+      if(it.v.cond==='used' && S.cond!=='used') S.fuel='ice';
+      S.cond = it.v.cond;
+      if(it.v.fuel) S.fuel = it.v.fuel;
+      if(it.v.age) S.age = it.v.age;
+      if(it.v.minAge && S.age < it.v.minAge) S.age = it.v.minAge;
+      C.gmfvOver=''; $('gmfvOver').value='';
+      render();
+    });
+}
+
+/* ---------------- render ---------------- */
+var lastMonthly = null;
+function render(){
+  var a = args(), r = calc(a), pcp = S.mode==='pcp';
+
+  /* what shows depends on the rate picked */
+  $('resHead').textContent = pcp ? 'Monthly payment' : 'Monthly payment — Hire Purchase';
+  $('hpLink').innerHTML = pcp ? 'Need a straight Hire Purchase figure? &rarr;' : '&larr; Back to PCP — Solutions';
+  var rInfo = rateInfo(S.apr);
+  var ageFixed = !!(rInfo && rInfo.age);       /* 11.9% is a year old or less by definition */
+  if(ageFixed) S.age = rInfo.age;
+  $('ageWrap').style.display = (S.cond==='used' && !ageFixed) ? '' : 'none';
+  $('usedFuelWrap').style.display = S.cond==='used' ? '' : 'none';
+  $('uIce').className = S.fuel==='ice'?'on':''; $('uEv').className = S.fuel==='ev'?'on':'';
+  $('mileWrap').style.display = pcp ? '' : 'none';
+  $('termCardHead').textContent = pcp ? 'Term & mileage' : 'Term';
+  if(termList().indexOf(S.term) === -1) S.term = pcp ? 48 : 48;
+  buildPills();
+
+  /* inputs (don't fight the user while typing) */
+  syncInput('price',S.price); syncInput('dep',S.dep); syncInput('px',S.px);
+  syncInput('contrib',S.contrib); syncInput('target',S.target);
+  $('aprSlider').value = S.apr;
+  $('mileSlider').value = clamp(S.miles,4000,30000);
+  $('aprRead').textContent = num(S.apr).toFixed(1)+'% APR';
+
+  /* headline */
+  $('monthly').textContent = money(r.monthly,2);
+  $('perNote').textContent = 'a month';
+  var bits = [r.n + ' payments', S.term + ' month term', num(S.apr).toFixed(1)+'% APR'];
+  if(pcp) bits.push(S.miles.toLocaleString('en-GB')+' miles a year');
+  $('subline').textContent = bits.join('  ·  ');
+  $('pDot').className = 'dot' + (C.prodOn ? '' : ' off');
+
+  var over = isFinite(parseFloat(C.gmfvOver)) && parseFloat(C.gmfvOver)>0;
+  var kv = [
+    ['Total deposit', money(r.totalDep,0), a.contrib>0 ? 'inc '+money(a.contrib,0)+' contribution' : ''],
+    ['Amount of credit', money(r.credit,0), '']
+  ];
+  if(pcp) kv.push(['Optional final payment', money(r.finalDue,0),
+      over ? 'entered figure' : 'estimate — exact figure set by VWFS']);
+  else kv.push(['Option to purchase fee', money(r.finalDue,0), 'payable with the last instalment']);
+  if(showMore){
+    kv.push(['Total amount payable', money(r.totalPayable,0), 'inc deposit']);
+    kv.push(['Cost of credit', money(r.charges,0), 'interest &amp; fees']);
+    if(pcp) kv.push(['Excess mileage', num(C.excess).toFixed(1)+'p', 'per mile over']);
+  }
+  $('kvGrid').innerHTML = kv.map(function(k,ix){
+    var wide = (ix===kv.length-1 && kv.length%2===1) ? ' class="wide"' : '';
+    return '<div'+wide+'><div class="k">'+k[0]+'</div><div class="v">'+k[1]+
+           (k[2]?' <small>'+k[2]+'</small>':'')+'</div></div>';
+  }).join('');
+  $('moreBtn').textContent = showMore ? 'Less detail' : 'More detail';
+
+  /* term comparison */
+  $('thBal').textContent = pcp ? 'Est. final payment' : 'Option fee';
+  $('thTot').style.display = showMore ? '' : 'none';
+  var tb = $('termTable').querySelector('tbody');
+  tb.innerHTML = termList().map(function(t){
+    var savedTerm = S.term; S.term = t;
+    var aa = args({term:t, gmfv:estGmfv()});
+    S.term = savedTerm;
+    var rr = calc(aa);
+    return '<tr class="'+(t===S.term?'here':'')+'"><td>'+t+' months</td>'+
+           '<td><b>'+money(rr.monthly,2)+'</b></td>'+
+           '<td>'+money(rr.finalDue,0)+'</td>'+
+           (showMore ? '<td>'+money(rr.totalPayable,0)+'</td>' : '')+'</tr>';
+  }).join('');
+
+  /* work backwards */
+  var tgt = num(S.target);
+  if(tgt>0){
+    var pvFinal = r.i===0 ? r.finalDue : r.finalDue/Math.pow(1+r.i,S.term);
+    var creditNeeded = tgt*r.af + pvFinal;
+    var needed = a.price + a.prod - creditNeeded - a.px - a.contrib;
+    $('needDep').value = needed<=0 ? '0' : Math.ceil(needed).toLocaleString('en-GB');
+    $('solveHint').innerHTML = needed<=0
+      ? 'Nothing down gets there — at zero deposit it comes out at <b>'+money(calc(args({dep:0})).monthly,2)+'</b> a month.'
+      : 'To land on <b>'+money(tgt,0)+'</b> a month over '+S.term+' months at '+num(S.apr).toFixed(1)+
+        '% they need <b>'+money(Math.ceil(needed),0)+'</b> in total — that’s '+
+        money(Math.max(0,Math.ceil(needed)-a.px-a.contrib),0)+' of their own money after part exchange and contribution.';
+  } else {
+    $('needDep').value = '';
+    $('solveHint').textContent = 'Type the monthly they have in mind and this shows the deposit that gets there.';
+  }
+
+  /* panel readouts */
+  var changed = lastMonthly !== null && Math.abs(lastMonthly - r.monthly) > 0.004;
+
+  var pm = $('panelMonthly');
+  pm.textContent = money(r.monthly,2);
+  $('panelSub').textContent = C.prodOn
+    ? 'includes '+money(num(C.prod),0)+' adjustment'
+    : 'adjustment OFF — not in this figure';
+  if(changed){
+    pm.className = 'lv flash';
+    setTimeout(function(){ pm.className='lv'; }, 220);
+  }
+
+  /* sticky bar - customer facing, so nothing about the adjustment here */
+  var sm = $('stickMonthly');
+  sm.textContent = money(r.monthly,2);
+  var sbits = [S.term+' mth'];
+  if(pcp) sbits.push((S.miles/1000)+'k miles');
+  sbits.push(num(S.apr).toFixed(1)+'%');
+  $('stickSub').textContent = sbits.join(' \u00b7 ');
+  if(changed){
+    sm.className = 'sbv flash';
+    setTimeout(function(){ sm.className='sbv'; }, 220);
+  }
+  lastMonthly = r.monthly;
+  stickCheck();
+
+  $('prodOnBtn').className  = C.prodOn ? 'on' : '';
+  $('prodOffBtn').className = C.prodOn ? '' : 'on';
+  $('prodState').innerHTML = C.prodOn
+    ? 'Included — it is added to the amount financed, so the monthly above moves as you type.'
+    : '<b style="color:var(--warn)">Currently off.</b> Nothing you type here will change the monthly until you switch it back to Included.';
+
+  $('rvPctLabel').textContent = rvPct().toFixed(1)+'% · '+money(estGmfv(),0);
+  $('rvHint').innerHTML = over
+    ? 'Currently overridden by the figure below — clear it to go back to the estimate.'
+    : 'Estimated from a '+(S.cond==='used'?'used ':'new ')+(S.fuel==='ev'?'electric ':'petrol/diesel ')+
+      'residual curve at '+S.miles.toLocaleString('en-GB')+' miles a year over '+S.term+' months. Nudge it if VWFS is running higher or lower.';
+  syncInput('prodAmt',C.prod); syncInput('fee',C.fee); syncInput('excess',C.excess);
+  syncInput('gmfvOver',C.gmfvOver);
+  $('rvTweak').value = C.rvTweak;
+
+  /* warnings */
+  var w = $('result').querySelector('.warnbox');
+  if(w) w.remove();
+  if(r.capped && pcp){
+    var d = document.createElement('div');
+    d.className='warnbox';
+    d.style.cssText='background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff';
+    d.innerHTML='Deposit is large enough that the final payment has been trimmed to fit the balance.';
+    $('result').appendChild(d);
+  }
+
+  $('disc').innerHTML =
+    '<b>Indicative only.</b> Payments monthly in arrears, first one a month after delivery; the APR is converted to a '+
+    'monthly rate and the '+(pcp?'optional final payment sits at month '+S.term+'':'agreement clears in full')+'. '+
+    (pcp?'The final payment here is an estimate from a residual curve — the real guaranteed future value is set by Volkswagen Financial Services and can differ. ':'')+
+    'Excludes road fund licence, insurance, damage and excess mileage charges. Not a quotation and subject to status.';
+
+  save();
+}
+
+function syncInput(id,v){
+  var el = $(id);
+  if(document.activeElement === el) return;
+  if(id==='gmfvOver'){ el.value = (v===''||v===null||v===undefined) ? '' : v; return; }
+  el.value = (v===0 && (id==='px'||id==='contrib'||id==='target')) ? '' : v;
+}
+
+/* ---------------- wiring ---------------- */
+/* inC=true means the value lives on C. Look C up at event time, never
+   capture the object, so a settings reset can't orphan the handler. */
+function bindNum(id, key, inC){
+  var el = $(id);
+  function apply(){ (inC ? C : S)[key] = num(el.value); render(); }
+  el.addEventListener('input', apply);
+  el.addEventListener('change', apply);
+}
+bindNum('price','price'); bindNum('dep','dep'); bindNum('px','px');
+bindNum('contrib','contrib'); bindNum('target','target');
+bindNum('prodAmt','prod',true); bindNum('fee','fee',true); bindNum('excess','excess',true);
+
+$('gmfvOver').addEventListener('input', function(){ C.gmfvOver = this.value; render(); });
+$('gmfvOver').addEventListener('change', function(){ C.gmfvOver = this.value; render(); });
+$('rvTweak').addEventListener('input', function(){ C.rvTweak = num(this.value); render(); });
+$('aprSlider').addEventListener('input', function(){ S.apr = num(this.value); render(); });
+
+$('hpLink').onclick = function(){ S.mode = S.mode==='pcp' ? 'hp' : 'pcp'; render(); };
+$('uIce').onclick = function(){ S.fuel='ice'; C.gmfvOver=''; $('gmfvOver').value=''; render(); };
+$('uEv').onclick  = function(){ S.fuel='ev';  C.gmfvOver=''; $('gmfvOver').value=''; render(); };
+$('mileSlider').addEventListener('input', function(){ S.miles = num(this.value); render(); });
+$('moreBtn').onclick = function(){ showMore = !showMore; render(); };
+
+$('pDot').onclick = function(){ C.prodOn = !C.prodOn; render(); };
+$('prodOnBtn').onclick  = function(){ C.prodOn = true;  render(); };
+$('prodOffBtn').onclick = function(){ C.prodOn = false; render(); };
+
+$('resetBtn').onclick = function(){
+  var keep = {mode:S.mode, cond:S.cond, fuel:S.fuel, apr:S.apr, term:S.term, miles:S.miles};
+  var fresh = clone(DEF_S);
+  for(var k in keep) fresh[k]=keep[k];
+  fresh.price=0; fresh.dep=0;
+  fill(S, fresh);
+  C.gmfvOver='';
+  $('gmfvOver').value='';
+  ['price','dep','px','contrib','target'].forEach(function(i){ $(i).value=''; });
+  render();
+};
+
+$('copyBtn').onclick = function(){
+  var a = args(), r = calc(a), pcp = S.mode==='pcp';
+  var L = [];
+  L.push('Volkswagen — indicative '+(pcp?'PCP (Solutions)':'Hire Purchase')+' figures');
+  L.push('');
+  L.push('Cash price            '+money(a.price,0));
+  L.push('Deposit               '+money(a.dep,0));
+  if(a.px>0)      L.push('Part exchange         '+money(a.px,0));
+  if(a.contrib>0) L.push('Deposit contribution  '+money(a.contrib,0));
+  if(a.px>0 || a.contrib>0) L.push('Total deposit         '+money(r.totalDep,0));
+  L.push('Amount of credit      '+money(r.credit,0));
+  L.push('Term                  '+S.term+' months ('+r.n+' payments)');
+  if(pcp) L.push('Annual mileage        '+S.miles.toLocaleString('en-GB'));
+  L.push('APR                   '+num(S.apr).toFixed(1)+'%');
+  L.push('');
+  L.push('MONTHLY               '+money(r.monthly,2));
+  if(pcp) L.push('Est. final payment    '+money(r.finalDue,0));
+  L.push('');
+  if(pcp) L.push('The final payment is an estimate — the exact figure comes from Volkswagen Financial Services.');
+  L.push('Indicative figures, subject to status and a full quotation.');
+  var txt = L.join('\n');
+  var done = function(){ toast('Quote copied'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done, function(){ fallback(txt,done); });
+  } else fallback(txt,done);
+};
+function fallback(txt,cb){
+  var t=document.createElement('textarea'); t.value=txt;
+  t.style.cssText='position:fixed;opacity:0'; document.body.appendChild(t);
+  t.select(); try{ document.execCommand('copy'); cb(); }catch(e){}
+  document.body.removeChild(t);
+}
+var tt;
+function toast(m){
+  var el=$('toast'); el.textContent=m; el.className='toast show';
+  clearTimeout(tt); tt=setTimeout(function(){ el.className='toast'; },1600);
+}
+
+/* short press-and-hold on the badge opens the settings sheet */
+(function(){
+  var timer=null, moved=false, el=$('badgeTouch');
+  function start(){ moved=false; timer=setTimeout(function(){ if(!moved) openPanel(); }, 320); }
+  function cancel(){ clearTimeout(timer); }
+  el.addEventListener('touchstart', start, {passive:true});
+  el.addEventListener('touchmove', function(){ moved=true; cancel(); }, {passive:true});
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+})();
+function openPanel(){ $('scrim').className='scrim show'; $('panel').className='sheetp show'; render(); }
+function closePanel(){
+  /* pull whatever is sitting in the focused field into state first, then
+     drop focus so the next render is free to rewrite every input */
+  var el = document.activeElement;
+  if(el && el.tagName === 'INPUT'){
+    if(el.id === 'prodAmt')  C.prod    = num(el.value);
+    if(el.id === 'fee')      C.fee     = num(el.value);
+    if(el.id === 'excess')   C.excess  = num(el.value);
+    if(el.id === 'gmfvOver') C.gmfvOver = el.value;
+    if(el.blur) el.blur();
+  }
+  $('scrim').className='scrim'; $('panel').className='sheetp';
+  render();
+}
+$('scrim').onclick = closePanel;
+$('closePanel').onclick = closePanel;
+$('defaultsBtn').onclick = function(){
+  fill(C, clone(DEF_C));
+  $('gmfvOver').value='';
+  render();
+};
+
+/* ---------------------------------------------------------------
+   Sticky monthly. The headline lives well down the page on a phone,
+   and with the keyboard up there is almost nothing left to look at,
+   so the figure rides along under the header whenever the real one
+   is not on screen. 10px of hysteresis stops it flickering, and it
+   is re-checked on visualViewport events because that is what iOS
+   fires when the keyboard opens and closes.
+----------------------------------------------------------------*/
+var BAR = 46, stickOn = false, stickQueued = false;
+function stickCheck(){
+  var bar = $('stickBar'), line = $('bigLine');
+  if(!bar || !line) return;
+  var hdr = document.querySelector('header');
+  var base = hdr.offsetHeight - bar.offsetHeight;   /* header without the bar */
+  var vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  var rect = line.getBoundingClientRect();
+  var floor = base + BAR;
+  var want = stickOn ? (rect.bottom < floor + 10 || rect.top > vh)
+                     : (rect.bottom < floor      || rect.top > vh);
+  if(want === stickOn) return;
+  stickOn = want;
+  bar.className = want ? 'stick show' : 'stick';
+}
+function stickSoon(){
+  if(stickQueued) return;
+  stickQueued = true;
+  requestAnimationFrame(function(){ stickQueued = false; stickCheck(); });
+}
+window.addEventListener('scroll', stickSoon, {passive:true});
+window.addEventListener('resize', stickSoon);
+window.addEventListener('orientationchange', function(){ setTimeout(stickCheck, 250); });
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', stickSoon);
+  window.visualViewport.addEventListener('scroll', stickSoon);
+}
+/* keyboard open/close on iOS does not always fire resize - catch focus too */
+document.addEventListener('focusin',  function(){ setTimeout(stickCheck, 300); });
+document.addEventListener('focusout', function(){ setTimeout(stickCheck, 300); });
+$('stickTap').onclick = function(){
+  var el = $('result');
+  if(el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'center'});
+};
+
+render();
+setTimeout(stickCheck, 60);
+})();
+</script>
+</body>
+</html>
