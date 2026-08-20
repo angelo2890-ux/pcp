@@ -674,11 +674,22 @@ function render(){
     var creditNeeded = tgt*r.af + pvFinal;
     var needed = a.price + a.prod - creditNeeded - a.px - a.contrib;
     $('needDep').value = needed<=0 ? '0' : Math.ceil(needed).toLocaleString('en-GB');
+    /* `needed` is already the customer's own cash — the part exchange and the
+       contribution have been taken off above. Don't subtract them a second
+       time; add them back to state the total deposit. */
+    var cash = Math.ceil(needed);
+    var already = a.px + a.contrib;
+    var bitsIn = [];
+    if(a.px>0)      bitsIn.push('part exchange');
+    if(a.contrib>0) bitsIn.push('contribution');
+    var lead = 'To land on <b>'+money(tgt,0)+'</b> a month over '+S.term+
+               ' months at '+num(S.apr).toFixed(1)+'% they need <b>'+money(cash,0)+'</b> ';
     $('solveHint').innerHTML = needed<=0
       ? 'Nothing down gets there — at zero deposit it comes out at <b>'+money(calc(args({dep:0})).monthly,2)+'</b> a month.'
-      : 'To land on <b>'+money(tgt,0)+'</b> a month over '+S.term+' months at '+num(S.apr).toFixed(1)+
-        '% they need <b>'+money(Math.ceil(needed),0)+'</b> in total — that’s '+
-        money(Math.max(0,Math.ceil(needed)-a.px-a.contrib),0)+' of their own money after part exchange and contribution.';
+      : already>0
+        ? lead+'of their own money — that makes '+money(cash+already,0)+
+          ' total deposit once the '+money(already,0)+' '+bitsIn.join(' and ')+' goes in.'
+        : lead+'down.';
   } else {
     $('needDep').value = '';
     $('solveHint').textContent = 'Type the monthly they have in mind and this shows the deposit that gets there.';
