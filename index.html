@@ -65,6 +65,21 @@ header{
   padding:16px;margin-top:14px
 }
 .card.flush{padding:0;overflow:hidden}
+
+/* ---------- live monthly bar (shows while a figure is being typed) ---------- */
+.livebar{
+  display:none;align-items:baseline;justify-content:space-between;gap:12px;
+  margin:14px -16px -16px;padding:11px 16px;
+  background:var(--blue);color:#fff;
+  border-radius:0 0 5px 5px
+}
+.livebar.show{display:flex}
+.lb-l{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
+.lb-r{display:flex;align-items:baseline;gap:10px;min-width:0}
+.lb-v{font-size:22px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.lb-d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:#9FC6E4;white-space:nowrap}
+.lb-d.up{color:#FF9E80}
+.lb-d.down{color:#6EE7A8}
 .ch{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
@@ -251,6 +266,15 @@ td b{font-weight:700}
       <label>Fuel</label>
       <div class="seg sm" style="max-width:320px"><button id="uIce" class="on">Petrol / Diesel</button><button id="uEv">Electric</button></div>
     </div>
+
+    <!-- only on screen while a figure above is being typed -->
+    <div class="livebar" id="liveBar" aria-live="polite">
+      <span class="lb-l">Monthly</span>
+      <span class="lb-r">
+        <span class="lb-d" id="liveDelta"></span>
+        <span class="lb-v" id="liveMonthly">&pound;0</span>
+      </span>
+    </div>
   </div>
 
   <!-- ============ TERM & MILEAGE ============ -->
@@ -383,14 +407,34 @@ td b{font-weight:700}
 /* ---------------------------------------------------------------
    Residual value tables. Percentage of the cash price that VWFS
    sets as the guaranteed future value, at 10,000 miles a year.
-   Calibrated against published Volkswagen representative examples
-   (Golf, Tiguan, ID.3 - Q3 2026 campaign).
+
+   Petrol/diesel: calibrated against Golf and Tiguan representative
+   examples. Electric: recalibrated Aug 2026 against four published
+   Solutions examples from the Q3 2026 campaign —
+
+     ID.3 Match Pure 52kWh    £32,220 OTR, OFP £10,732.50, 49mth/6k
+     ID.4 Match Pure 58kWh    £39,590 OTR, OFP £11,947.50, 49mth/6k
+     ID.7 Pro Match Plus      £51,445 OTR, OFP £17,265.60, 48mth/8k
+     ID.7 Tourer Pro Match S  £52,225 OTR, OFP £18,012.60, 48mth/10k
+
+   Normalised to 48 months and 10,000 miles those land at 33.2, 28.5,
+   32.0 and 34.5 per cent. The old table sat at 27 and was quoting
+   every one of them too dear — up to £78 a month out on the ID.7.
+   32% is the anchor that minimises the error across all four.
+
+   The spread is real: the ID.7 pair genuinely hold value better than
+   the ID.4. One curve cannot sit on all of them, so expect roughly
+   +£8/mth on an ID.3, -£25 on an ID.4, dead on an ID.7. Nudge the
+   residual tweak in settings for a particular car, or better, type
+   the real figure into the final-payment override once you have it.
 ----------------------------------------------------------------*/
 var RV = {
   new_ice : {24:57.0, 36:47.0, 42:43.0, 48:39.5, 60:32.0},
-  new_ev  : {24:44.0, 36:34.0, 42:30.5, 48:27.0, 60:21.0},
+  new_ev  : {24:51.0, 36:39.5, 42:35.5, 48:32.0, 60:25.5},
   used_ice: {24:62.0, 36:52.0, 42:48.0, 48:44.0, 60:37.0},
-  used_ev : {24:52.0, 36:41.0, 42:37.0, 48:33.0, 60:26.0}
+  /* no published used-EV examples to work from; shifted by the same
+     amount as the new-EV line, holding the gap the old table used */
+  used_ev : {24:59.0, 36:46.5, 42:42.0, 48:38.0, 60:30.5}
 };
 
 /* Each rate implies the car, so picking one silently sets condition
@@ -582,6 +626,7 @@ function render(){
   /* headline */
   $('monthly').textContent = money(r.monthly,2);
   $('perNote').textContent = 'a month';
+  paintLive(r.monthly);
   var bits = [r.n + ' payments', S.term + ' month term', num(S.apr).toFixed(1)+'% APR'];
   if(pcp) bits.push(S.miles.toLocaleString('en-GB')+' miles a year');
   $('subline').textContent = bits.join('  ·  ');
@@ -692,6 +737,42 @@ function syncInput(id,v){
   if(id==='gmfvOver'){ el.value = (v===''||v===null||v===undefined) ? '' : v; return; }
   el.value = (v===0 && (id==='px'||id==='contrib'||id==='target')) ? '' : v;
 }
+
+/* ---------------- live monthly bar ----------------
+   The result card is off the bottom of a phone screen once the keyboard is
+   up, so while one of the deal figures is being typed the monthly is
+   mirrored in a bar at the foot of that card, with the change since the
+   edit started alongside it. */
+var LIVE_FIELDS = ['price','dep','px','contrib'];
+var liveBase = null, liveHide = null;
+
+function paintLive(monthly){
+  if(liveBase == null) return;
+  $('liveMonthly').textContent = money(monthly,2);
+  var d = monthly - liveBase, el = $('liveDelta');
+  if(Math.abs(d) < 0.005){ el.textContent = ''; el.className = 'lb-d'; return; }
+  el.textContent = (d>0?'+':'\u2212') + money(Math.abs(d),2);
+  el.className = 'lb-d ' + (d>0 ? 'up' : 'down');
+}
+
+LIVE_FIELDS.forEach(function(id){
+  var el = $(id);
+  el.addEventListener('focus', function(){
+    clearTimeout(liveHide);
+    if(liveBase == null) liveBase = calc(args()).monthly;   /* baseline, once */
+    $('liveBar').className = 'livebar show';
+    paintLive(calc(args()).monthly);
+  });
+  el.addEventListener('blur', function(){
+    /* a short grace period so hopping between the four fields doesn't
+       flicker the bar or reset the baseline */
+    clearTimeout(liveHide);
+    liveHide = setTimeout(function(){
+      $('liveBar').className = 'livebar';
+      liveBase = null;
+    }, 180);
+  });
+});
 
 /* ---------------- wiring ---------------- */
 /* inC=true means the value lives on C. Look C up at event time, never
