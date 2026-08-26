@@ -18,10 +18,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --blue:#001E50; --blue-2:#00437A; --cyan:#00B0F0; --cyan-d:#0084C8;
-  --ink:#001E50; --muted:#6A767D; --line:#DFE4E8; --line-2:#EEF1F2;
-  --bg:#F2F4F5; --card:#FFFFFF; --good:#00A03E; --warn:#C7401F;
-  --pad:16px;
+  /* ---- brand (accent = primary actions only, never status) ---- */
+  --blue:#001E50; --blue-2:#00437A; --blue-deep:#00163C;
+  --cyan:#00B0F0; --cyan-d:#0084C8;
+  --accent:#00B0F0;
+
+  /* ---- surfaces & text ---- */
+  --bg:#F2F4F5; --card:#FFFFFF; --white:#FFFFFF; --surface-2:#FAFBFB;
+  --ink:#001E50;
+  --muted:#58636A;              /* 5.6:1 on --bg, 5.4:1 on --line-2 */
+  --muted-on-dark:#9FC6E4;      /* 9.0:1 on --blue */
+  --muted-on-dark-2:#7FA8CC;    /* 7.1:1 on --blue-deep */
+
+  /* ---- borders ---- */
+  --line:#7E8D99;               /* interactive borders, 3.4:1 on white */
+  --line-soft:#DFE4E8;          /* decorative dividers only */
+  --line-2:#EEF1F2;             /* affix fill */
+
+  /* ---- semantic status ---- */
+  --success:#077333; --success-bg:#EAF6EE; --success-border:#A9D6BC;
+  --warning:#8A5200; --warning-bg:#FDF6EC; --warning-border:#E6CDA2;
+  --danger:#A82D18;  --danger-bg:#FDF3F0;  --danger-border:#E0B3A6;
+  --info:#005E96;    --info-bg:#EAF6FD;    --info-border:#A9CFE8;
+  --info-on-dark:#7ED0FF;
+  --link:#0A66A8;
+
+  --focus:#0084C8;
+  --pad:16px; --tap:44px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -36,7 +59,7 @@ body{
 
 /* ---------- header ---------- */
 header{
-  background:var(--blue); color:#fff;
+  background:var(--blue); color:var(--white);
   padding:calc(env(safe-area-inset-top) + 12px) 0 0;
   position:sticky; top:0; z-index:40;
 }
@@ -44,17 +67,32 @@ header{
 .mark{width:38px;height:38px;flex:0 0 38px;user-select:none}
 .brand{line-height:1.15}
 .brand b{display:block;font-size:15px;font-weight:600;letter-spacing:.02em}
-.brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FC6E4}
+.brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-on-dark)}
 .nav{max-width:760px;margin:0 auto;padding:0 var(--pad);display:flex;gap:2px}
 .nav a{
-  color:#9FC6E4;text-decoration:none;font-size:13px;font-weight:500;
-  padding:9px 14px;border-bottom:3px solid transparent;letter-spacing:.02em
+  color:var(--muted-on-dark);text-decoration:none;font-size:13px;font-weight:500;
+  padding:0 14px;min-height:var(--tap);display:inline-flex;align-items:center;
+  border-bottom:3px solid transparent;letter-spacing:.02em
 }
-.nav a.on{color:#fff;border-bottom-color:var(--cyan)}
+.nav a.on{color:var(--white);border-bottom-color:var(--accent);font-weight:600}
+
+/* ---------- sticky monthly (rides with the header) ---------- */
+.stick{background:var(--blue-deep);border-top:1px solid rgba(255,255,255,.14);display:none}
+.stick.show{display:block}
+.sb{
+  max-width:760px;width:100%;margin:0 auto;padding:8px var(--pad) 9px;min-height:var(--tap);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;
+  background:transparent;border:0;font:inherit;text-align:left;color:inherit
+}
+.sbk{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-on-dark);line-height:1.3}
+.sbk small{display:block;font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--muted-on-dark-2);margin-top:1px}
+.sbv{font-size:23px;font-weight:700;color:var(--white);letter-spacing:-.01em;line-height:1;white-space:nowrap;transition:color .12s}
+.sbv.flash{color:var(--info-on-dark)}
+@media(min-width:900px){.sb{max-width:1100px}}
 
 /* ---------- cards ---------- */
 .card{
-  background:var(--card);border:1px solid var(--line);border-radius:6px;
+  background:var(--card);border:1px solid var(--line-soft);border-radius:6px;
   padding:16px;margin-top:14px
 }
 .card.flush{padding:0;overflow:hidden}
@@ -66,8 +104,8 @@ header{
 /* ---------- fields ---------- */
 .fld{margin-bottom:12px}
 .fld:last-child{margin-bottom:0}
-label{display:block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:4px;background:#fff;overflow:hidden}
+label,.lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:4px;background:var(--white);overflow:hidden}
 .inp:focus-within{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,176,240,.16)}
 .inp .pfx,.inp .sfx{padding:0 9px;color:var(--muted);font-size:14px;font-weight:500;background:var(--line-2);align-self:stretch;display:flex;align-items:center}
 .inp .sfx{border-left:1px solid var(--line)}
@@ -82,78 +120,90 @@ input[type=number]{-moz-appearance:textfield}
 /* ---------- pills ---------- */
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{
-  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
-  padding:9px 13px;border:1px solid var(--line);background:#fff;color:var(--ink);
-  border-radius:4px;line-height:1.1;transition:.12s
+  position:relative;font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  min-height:var(--tap);padding:8px 16px 8px 14px;border:1px solid var(--line);
+  background:var(--white);color:var(--ink);border-radius:4px;line-height:1.1;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:background .12s,border-color .12s,color .12s
 }
-.pill:hover{border-color:var(--cyan)}
-.pill.on{background:var(--blue);border-color:var(--blue);color:#fff}
-.pill small{display:block;font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.62;margin-top:3px}
-.pill.on small{opacity:.75}
+.pill:hover{border-color:var(--blue-2)}
+.pill.on{background:var(--blue);border-color:var(--blue);color:var(--white)}
+/* selected state is never colour alone - a tick is painted in as well */
+.pill.on::after{content:"\2713";position:absolute;top:3px;right:4px;font-size:10px;line-height:1;font-weight:700}
+.pill small{display:block;font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.78;margin-top:3px}
+.pill.on small{opacity:.85}
 .seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--line-2)}
 .seg button{
-  flex:1;font:inherit;font-size:14px;font-weight:600;padding:10px 6px;border:0;cursor:pointer;
-  background:transparent;color:var(--muted)
+  position:relative;flex:1;font:inherit;font-size:14px;font-weight:600;min-height:var(--tap);
+  padding:8px 6px;border:0;cursor:pointer;background:transparent;color:var(--muted)
 }
-.seg button.on{background:var(--blue);color:#fff}
+.seg button.on{background:var(--blue);color:var(--white)}
+.seg button.on::after{content:"\2713";position:absolute;top:3px;right:5px;font-size:10px;line-height:1;font-weight:700}
 .seg.sm button{font-size:12.5px;padding:7px 4px}
 
 input[type=range]{
-  -webkit-appearance:none;width:100%;height:22px;background:transparent;margin:0
+  -webkit-appearance:none;appearance:none;display:block;width:100%;
+  height:var(--tap);background:transparent;margin:0
 }
 input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 1px var(--line);margin-top:-8px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--blue);border:3px solid var(--white);box-shadow:0 0 0 1px var(--line);margin-top:-10px}
 input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:2px}
-input[type=range]::-moz-range-thumb{width:20px;height:20px;border:3px solid #fff;border-radius:50%;background:var(--blue)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border:3px solid var(--white);border-radius:50%;background:var(--blue)}
 
 /* ---------- result ---------- */
-.result{background:var(--blue);color:#fff;border-color:var(--blue);position:relative}
-.result .ch{color:#9FC6E4}
+.result{background:var(--blue);color:var(--white);border-color:var(--blue);position:relative}
+.result .ch{color:var(--muted-on-dark)}
 .big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .big .amt{font-size:46px;font-weight:700;letter-spacing:-.02em;line-height:1}
-.big .per{font-size:14px;color:#9FC6E4;font-weight:500}
-.subline{font-size:13px;color:#9FC6E4;margin-top:8px}
+.big .per{font-size:14px;color:var(--muted-on-dark);font-weight:500}
+.subline{font-size:13px;color:var(--muted-on-dark);margin-top:8px}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.14);border-radius:4px;overflow:hidden;margin-top:16px}
 .kv div{background:var(--blue);padding:9px 11px}
-.kv .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9FC6E4}
+.kv .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-on-dark)}
 .kv .v{font-size:16px;font-weight:600;margin-top:1px}
-.kv .v small{display:block;font-size:11px;font-weight:500;color:#9FC6E4;letter-spacing:.04em;margin-top:1px}
+.kv .v small{display:block;font-size:11px;font-weight:500;color:var(--muted-on-dark);letter-spacing:.04em;margin-top:1px}
 .dot{
-  position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;
+  position:absolute;top:4px;right:4px;width:var(--tap);height:var(--tap);border-radius:50%;
   border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center
 }
-.dot i{display:block;width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(159,198,228,.55);background:rgba(159,198,228,.55);transition:.15s}
+/* filled vs hollow - a shape difference, not just a colour one */
+.dot i{display:block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--muted-on-dark);background:var(--muted-on-dark);transition:background .15s}
 .dot.off i{background:transparent}
 .btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .btn{
-  font:inherit;font-size:13.5px;font-weight:600;padding:10px 14px;border-radius:4px;cursor:pointer;
-  border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff
+  font:inherit;font-size:13.5px;font-weight:600;min-height:var(--tap);padding:10px 16px;
+  border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.55);background:transparent;color:var(--white)
 }
-.btn.solid{background:var(--cyan);border-color:var(--cyan);color:var(--blue)}
+.btn.solid{background:var(--accent);border-color:var(--accent);color:var(--blue)}
 .btn:active{opacity:.75}
-.btn.dark{border-color:var(--line);color:var(--blue);background:#fff}
+.btn.dark{border-color:var(--line);color:var(--blue);background:var(--white)}
 
 /* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-2)}
-th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;background:#FAFBFB}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-soft)}
+th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2)}
 th:first-child,td:first-child{text-align:left;white-space:nowrap}
 tbody tr:last-child td{border-bottom:0}
-tr.here td{background:#EAF6FD;font-weight:600}
+tr.here td{background:var(--info-bg);font-weight:600}
 td b{font-weight:700}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
 .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
-.warnbox{background:#FDF3F0;border:1px solid #F0D2C9;color:#8A2B12;font-size:12.5px;padding:9px 11px;border-radius:4px;margin-top:10px}
+.notice{background:var(--info-bg);border:1px solid var(--info-border);color:var(--info);font-size:12.5px;padding:9px 11px;border-radius:4px;margin-top:10px}
+.notice.warning{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning)}
+.notice.danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger)}
+.result .notice{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4);color:var(--white)}
+.state-warning{color:var(--warning);font-weight:700}
 .disc{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:18px}
 .disc b{color:var(--ink)}
-.gmfv-edit{background:none;border:0;padding:0;font:inherit;color:var(--cyan);text-decoration:underline;cursor:pointer;font-size:11px}
+.gmfv-edit{background:none;border:0;padding:0 2px;font:inherit;color:var(--link);text-decoration:underline;cursor:pointer;font-size:11px;min-height:var(--tap);display:inline-flex;align-items:center}
 
 /* ---------- hidden panel ---------- */
 .scrim{position:fixed;inset:0;background:rgba(0,30,80,.55);z-index:90;display:none}
 .scrim.show{display:block}
 .sheetp{
-  position:fixed;left:0;right:0;bottom:0;z-index:100;background:#fff;border-radius:10px 10px 0 0;
+  position:fixed;left:0;right:0;bottom:0;z-index:100;background:var(--white);border-radius:10px 10px 0 0;
   padding:18px var(--pad) calc(env(safe-area-inset-bottom) + 22px);max-height:88vh;overflow:auto;
   max-width:760px;margin:0 auto;display:none
 }
@@ -161,22 +211,30 @@ td b{font-weight:700}
 .sheetp h3{margin:0 0 4px;font-size:16px}
 .livebar{
   display:flex;align-items:baseline;justify-content:space-between;gap:10px;
-  background:var(--blue);color:#fff;border-radius:6px;padding:10px 13px;margin:12px 0 16px;
+  background:var(--blue);color:var(--white);border-radius:6px;padding:10px 13px;margin:12px 0 16px;
   position:sticky;top:-18px;z-index:5
 }
-.livebar .lk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9FC6E4}
+.livebar .lk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-on-dark)}
 .livebar .lv{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1;transition:color .12s}
-.livebar .lv.flash{color:var(--cyan)}
-.livebar .ls{display:block;font-size:10.5px;font-weight:500;color:#9FC6E4;letter-spacing:.04em;margin-top:3px;text-align:right}
+.livebar .lv.flash{color:var(--info-on-dark)}
+.livebar .ls{display:block;font-size:10.5px;font-weight:500;color:var(--muted-on-dark);letter-spacing:.04em;margin-top:3px;text-align:right}
 .toast{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:var(--blue);color:#fff;
+  position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:var(--blue);color:var(--white);
   padding:10px 18px;border-radius:20px;font-size:13.5px;font-weight:600;z-index:200;opacity:0;
   transition:opacity .2s;pointer-events:none
 }
 .toast.show{opacity:1}
 
-.hplink{display:block;margin-top:14px;background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
-.morelink{background:none;border:0;padding:0;margin-top:12px;font:inherit;font-size:12px;color:#9FC6E4;text-decoration:underline;cursor:pointer}
+.hplink{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:6px;background:none;border:0;padding:0 2px;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.morelink{display:inline-flex;align-items:center;min-height:var(--tap);background:none;border:0;padding:0 2px;margin-top:4px;font:inherit;font-size:12px;color:var(--muted-on-dark);text-decoration:underline;cursor:pointer}
+/* ---------- focus, motion, screen-reader helpers ---------- */
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+header :focus-visible,.stick :focus-visible,.result :focus-visible,.livebar :focus-visible{outline-color:var(--accent)}
+.inp:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important;scroll-behavior:auto !important}
+}
 .kv .wide{grid-column:1/-1}
 .cols>div{min-width:0}
 @media(min-width:900px){
@@ -204,70 +262,78 @@ td b{font-weight:700}
     <a href="index.html" class="on">Quote</a>
     <a href="overtime.html">Over time</a>
   </nav>
+  <div class="stick" id="stickBar">
+    <button type="button" class="sb" id="stickTap">
+      <span class="sbk">Monthly<small id="stickSub"></small></span>
+      <span class="sbv" id="stickMonthly">&pound;0</span>
+      <span class="sr-only">Jump to the full payment breakdown</span>
+    </button>
+  </div>
 </header>
 
-<div class="wrap">
+<main class="wrap" id="main">
 <div class="cols">
 <div>
 
   <!-- ============ THE DEAL ============ -->
   <div class="card">
-    <div class="ch">The deal</div>
+    <h2 class="ch" id="dealHead">The deal</h2>
 
     <div class="row">
       <div class="fld">
-        <label>On the road price</label>
-        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="price" inputmode="numeric" step="100" min="0"></div>
+        <label for="price">On the road price</label>
+        <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="price" inputmode="numeric" step="100" min="0"></div>
       </div>
       <div class="fld">
-        <label>Customer deposit</label>
-        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="dep" inputmode="numeric" step="100" min="0"></div>
+        <label for="dep">Customer deposit</label>
+        <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="dep" inputmode="numeric" step="100" min="0"></div>
       </div>
     </div>
     <div class="row">
       <div class="fld">
-        <label>Part exchange <span style="text-transform:none;letter-spacing:0">(equity)</span></label>
-        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="px" inputmode="numeric" step="100"></div>
+        <label for="px">Part exchange <span style="text-transform:none;letter-spacing:0">(equity)</span></label>
+        <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="px" inputmode="numeric" step="100"></div>
       </div>
       <div class="fld">
-        <label>Deposit contribution</label>
-        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="contrib" inputmode="numeric" step="100" min="0"></div>
+        <label for="contrib">Deposit contribution</label>
+        <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="contrib" inputmode="numeric" step="100" min="0"></div>
       </div>
     </div>
     <div class="fld" id="ageWrap" style="display:none">
-      <label>Age of car now</label>
-      <div class="pills" id="agePills"></div>
+      <span class="lbl" id="ageLabel">Age of car now</span>
+      <div class="pills" id="agePills" role="group" aria-labelledby="ageLabel"></div>
     </div>
     <div class="fld" id="usedFuelWrap" style="display:none">
-      <label>Fuel</label>
-      <div class="seg sm" style="max-width:320px"><button id="uIce" class="on">Petrol / Diesel</button><button id="uEv">Electric</button></div>
+      <span class="lbl" id="fuelLabel">Fuel</span>
+      <div class="seg sm" style="max-width:320px" role="group" aria-labelledby="fuelLabel"><button type="button" id="uIce" class="on" aria-pressed="true">Petrol / Diesel</button><button type="button" id="uEv" aria-pressed="false">Electric</button></div>
     </div>
   </div>
 
   <!-- ============ TERM & MILEAGE ============ -->
   <div class="card">
-    <div class="ch" id="termCardHead">Term &amp; mileage</div>
+    <h2 class="ch" id="termCardHead">Term &amp; mileage</h2>
     <div class="fld">
-      <label>Term</label>
-      <div class="pills" id="termPills"></div>
+      <span class="lbl" id="termLabel">Term</span>
+      <div class="pills" id="termPills" role="group" aria-labelledby="termLabel"></div>
     </div>
     <div class="fld" id="mileWrap">
-      <label>Miles a year</label>
-      <div class="pills" id="milePills"></div>
+      <span class="lbl" id="mileLabel">Miles a year</span>
+      <div class="pills" id="milePills" role="group" aria-labelledby="mileLabel"></div>
+      <label class="sr-only" for="mileSlider">Miles a year, fine adjustment</label>
       <input type="range" id="mileSlider" min="4000" max="30000" step="1000" style="margin-top:8px">
     </div>
   </div>
 
   <!-- ============ RATE ============ -->
   <div class="card">
-    <div class="ch">Rate</div>
-    <div class="pills" id="ratePills" style="margin-bottom:12px"></div>
-    <label style="display:flex;justify-content:space-between;align-items:baseline">
+    <h2 class="ch" id="rateHead">Rate</h2>
+    <div class="pills" id="ratePills" style="margin-bottom:12px" role="group" aria-labelledby="rateHead"></div>
+    <label for="aprSlider" style="display:flex;justify-content:space-between;align-items:baseline">
       <span>Or set it by hand</span>
       <span id="aprRead" style="font-size:15px;font-weight:700;color:var(--ink);letter-spacing:0"></span>
     </label>
     <input type="range" id="aprSlider" min="0" max="20" step="0.1">
-    <button class="hplink" id="hpLink">Need a straight Hire Purchase figure? &rarr;</button>
+    <button type="button" class="hplink" id="hpLink">Need a straight Hire Purchase figure? &rarr;</button>
   </div>
 
 </div>
@@ -275,29 +341,30 @@ td b{font-weight:700}
 
   <!-- ============ RESULT ============ -->
   <div class="card result" id="result">
-    <button class="dot" id="pDot" aria-label="."><i></i></button>
-    <div class="ch" id="resHead">Monthly payment</div>
-    <div class="big"><span class="amt" id="monthly">&pound;0</span><span class="per" id="perNote"></span></div>
+    <button type="button" class="dot" id="pDot" aria-pressed="true"><span class="sr-only">Include the adjustment amount in the monthly payment</span><i aria-hidden="true"></i></button>
+    <h2 class="ch" id="resHead">Monthly payment</h2>
+    <div class="big" id="bigLine"><span class="amt" id="monthly">&pound;0</span><span class="per" id="perNote"></span></div>
+    <p class="sr-only" id="srLive" role="status" aria-live="polite"></p>
     <div class="subline" id="subline"></div>
     <div class="kv" id="kvGrid"></div>
-    <button class="morelink" id="moreBtn">More detail</button>
+    <button type="button" class="morelink" id="moreBtn" aria-expanded="false" aria-controls="kvGrid">More detail</button>
     <div class="btnrow">
-      <button class="btn solid" id="copyBtn">Copy quote</button>
-      <button class="btn" id="resetBtn">Clear</button>
+      <button type="button" class="btn solid" id="copyBtn">Copy quote</button>
+      <button type="button" class="btn" id="resetBtn">Clear</button>
     </div>
   </div>
 
   <!-- ============ DEPOSIT / MONTHLY SOLVER ============ -->
   <div class="card">
-    <div class="ch">Work backwards</div>
+    <h2 class="ch" id="solveHead">Work backwards</h2>
     <div class="row">
       <div class="fld">
-        <label>Customer wants to pay</label>
-        <div class="inp"><span class="pfx">&pound;</span><input type="number" id="target" inputmode="numeric" step="10" min="0"><span class="sfx">/mth</span></div>
+        <label for="target">Customer wants to pay</label>
+        <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="target" inputmode="numeric" step="10" min="0"><span class="sfx">/mth</span></div>
       </div>
       <div class="fld">
-        <label>Deposit needed</label>
-        <div class="inp" style="background:var(--line-2)"><span class="pfx">&pound;</span><input type="text" id="needDep" readonly style="font-weight:700"></div>
+        <label for="needDep">Deposit needed</label>
+        <div class="inp" style="background:var(--line-2)"><span class="pfx" aria-hidden="true">&pound;</span><input type="text" id="needDep" readonly style="font-weight:700"></div>
       </div>
     </div>
     <div class="hint" id="solveHint"></div>
@@ -307,7 +374,8 @@ td b{font-weight:700}
   <div class="card flush">
     <div class="tw">
       <table id="termTable">
-        <thead><tr><th>Term</th><th>Monthly</th><th id="thBal">Est. final payment</th><th id="thTot" style="display:none">Total payable</th></tr></thead>
+        <caption class="sr-only">Monthly payment compared across every available term</caption>
+        <thead><tr><th scope="col">Term</th><th scope="col">Monthly</th><th scope="col" id="thBal">Est. final payment</th><th scope="col" id="thTot" style="display:none">Total payable</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -317,12 +385,11 @@ td b{font-weight:700}
 
 </div>
 </div>
-</div>
+</main>
 
-<div class="scrim" id="scrim"></div>
-<div class="sheetp" id="panel">
-  <h3>Tool settings</h3>
-  <div class="hint" style="margin-bottom:0">Only you see this.</div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheetp" id="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle" tabindex="-1" hidden>
+  <h2 id="panelTitle" style="margin:0 0 4px;font-size:16px">Tool settings</h2>
 
   <div class="livebar">
     <span class="lk">Monthly<br>right now</span>
@@ -330,42 +397,42 @@ td b{font-weight:700}
   </div>
 
   <div class="fld">
-    <label>Adjustment amount</label>
-    <div class="inp"><span class="pfx">&pound;</span><input type="number" id="prodAmt" inputmode="numeric" step="50" min="0"></div>
-    <div class="seg sm" style="max-width:240px;margin-top:8px">
-      <button id="prodOnBtn">Included</button><button id="prodOffBtn">Off</button>
+    <label for="prodAmt">Adjustment amount</label>
+    <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="prodAmt" inputmode="numeric" step="50" min="0"></div>
+    <div class="seg sm" style="max-width:240px;margin-top:8px" role="group" aria-label="Adjustment included in the monthly payment">
+      <button type="button" id="prodOnBtn" aria-pressed="true">Included</button><button type="button" id="prodOffBtn" aria-pressed="false">Off</button>
     </div>
     <div class="hint" id="prodState"></div>
   </div>
 
   <div class="fld">
-    <label>Final value used <span id="rvPctLabel" style="float:right;color:var(--ink);letter-spacing:0"></span></label>
+    <label for="rvTweak">Final value used <span id="rvPctLabel" style="float:right;color:var(--ink);letter-spacing:0"></span></label>
     <input type="range" id="rvTweak" min="-10" max="10" step="0.5">
     <div class="hint" id="rvHint"></div>
   </div>
 
   <div class="fld">
-    <label>Override final payment (this quote only)</label>
-    <div class="inp"><span class="pfx">&pound;</span><input type="number" id="gmfvOver" inputmode="numeric" step="50" min="0" placeholder="leave blank to estimate"></div>
+    <label for="gmfvOver">Override final payment (this quote only)</label>
+    <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="gmfvOver" inputmode="numeric" step="50" min="0" placeholder="leave blank to estimate"></div>
   </div>
 
   <div class="row">
     <div class="fld">
-      <label>Option to purchase fee</label>
-      <div class="inp"><span class="pfx">&pound;</span><input type="number" id="fee" inputmode="numeric" step="1" min="0"></div>
+      <label for="fee">Option to purchase fee</label>
+      <div class="inp"><span class="pfx" aria-hidden="true">&pound;</span><input type="number" id="fee" inputmode="numeric" step="1" min="0"></div>
     </div>
     <div class="fld">
-      <label>Excess mileage</label>
+      <label for="excess">Excess mileage</label>
       <div class="inp"><input type="number" id="excess" inputmode="decimal" step="0.1" min="0"><span class="sfx">p/mile</span></div>
     </div>
   </div>
 
   <div class="btnrow">
-    <button class="btn dark" id="closePanel" style="flex:1;text-align:center">Done</button>
-    <button class="btn dark" id="defaultsBtn">Reset settings</button>
+    <button type="button" class="btn dark" id="closePanel" style="flex:1;text-align:center">Done</button>
+    <button type="button" class="btn dark" id="defaultsBtn">Reset settings</button>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function(){
@@ -502,13 +569,22 @@ function args(over){
 
 /* ---------------- build the controls ---------------- */
 function pills(host, items, isOn, onPick){
-  host.innerHTML='';
-  items.forEach(function(it){
-    var b = document.createElement('button');
-    b.className = 'pill' + (isOn(it) ? ' on' : '');
-    b.innerHTML = it.label + (it.sub ? '<small>'+it.sub+'</small>' : '');
+  /* update in place - rebuilding the nodes swallows taps on iOS and throws
+     keyboard focus back to the top of the page mid-selection */
+  while(host.children.length > items.length) host.removeChild(host.lastChild);
+  items.forEach(function(it, ix){
+    var b = host.children[ix];
+    if(!b){
+      b = document.createElement('button');
+      b.type = 'button';
+      host.appendChild(b);
+    }
+    var on = !!isOn(it);
+    var html = it.label + (it.sub ? '<small>'+it.sub+'</small>' : '');
+    if(b.innerHTML !== html) b.innerHTML = html;
+    b.className = 'pill' + (on ? ' on' : '');
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
     b.onclick = function(){ onPick(it); };
-    host.appendChild(b);
   });
 }
 function buildPills(){
@@ -545,7 +621,11 @@ function buildPills(){
 }
 
 /* ---------------- render ---------------- */
-var lastMonthly = null;
+var lastMonthly = null, srT = null;
+function segState(btn, on){
+  btn.className = on ? 'on' : '';
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
 function render(){
   var a = args(), r = calc(a), pcp = S.mode==='pcp';
 
@@ -557,7 +637,7 @@ function render(){
   if(ageFixed) S.age = rInfo.age;
   $('ageWrap').style.display = (S.cond==='used' && !ageFixed) ? '' : 'none';
   $('usedFuelWrap').style.display = S.cond==='used' ? '' : 'none';
-  $('uIce').className = S.fuel==='ice'?'on':''; $('uEv').className = S.fuel==='ev'?'on':'';
+  segState($('uIce'), S.fuel==='ice'); segState($('uEv'), S.fuel==='ev');
   $('mileWrap').style.display = pcp ? '' : 'none';
   $('termCardHead').textContent = pcp ? 'Term & mileage' : 'Term';
   if(termList().indexOf(S.term) === -1) S.term = pcp ? 48 : 48;
@@ -577,6 +657,7 @@ function render(){
   if(pcp) bits.push(S.miles.toLocaleString('en-GB')+' miles a year');
   $('subline').textContent = bits.join('  ·  ');
   $('pDot').className = 'dot' + (C.prodOn ? '' : ' off');
+  $('pDot').setAttribute('aria-pressed', C.prodOn ? 'true' : 'false');
 
   var over = isFinite(parseFloat(C.gmfvOver)) && parseFloat(C.gmfvOver)>0;
   var kv = [
@@ -597,6 +678,7 @@ function render(){
            (k[2]?' <small>'+k[2]+'</small>':'')+'</div></div>';
   }).join('');
   $('moreBtn').textContent = showMore ? 'Less detail' : 'More detail';
+  $('moreBtn').setAttribute('aria-expanded', showMore ? 'true' : 'false');
 
   /* term comparison */
   $('thBal').textContent = pcp ? 'Est. final payment' : 'Option fee';
@@ -631,22 +713,36 @@ function render(){
   }
 
   /* panel readouts */
+  var changed = lastMonthly !== null && Math.abs(lastMonthly - r.monthly) > 0.004;
+
   var pm = $('panelMonthly');
   pm.textContent = money(r.monthly,2);
   $('panelSub').textContent = C.prodOn
     ? 'includes '+money(num(C.prod),0)+' adjustment'
     : 'adjustment OFF — not in this figure';
-  if(lastMonthly !== null && Math.abs(lastMonthly - r.monthly) > 0.004){
+  if(changed){
     pm.className = 'lv flash';
     setTimeout(function(){ pm.className='lv'; }, 220);
   }
-  lastMonthly = r.monthly;
 
-  $('prodOnBtn').className  = C.prodOn ? 'on' : '';
-  $('prodOffBtn').className = C.prodOn ? '' : 'on';
+  /* sticky bar - customer facing, so nothing about the adjustment here */
+  var sm = $('stickMonthly');
+  sm.textContent = money(r.monthly,2);
+  var sbits = [S.term+' mth'];
+  if(pcp) sbits.push((S.miles/1000)+'k miles');
+  sbits.push(num(S.apr).toFixed(1)+'%');
+  $('stickSub').textContent = sbits.join(' \u00b7 ');
+  if(changed){
+    sm.className = 'sbv flash';
+    setTimeout(function(){ sm.className='sbv'; }, 220);
+  }
+  lastMonthly = r.monthly;
+  stickCheck();
+
+  segState($('prodOnBtn'), C.prodOn); segState($('prodOffBtn'), !C.prodOn);
   $('prodState').innerHTML = C.prodOn
     ? 'Included — it is added to the amount financed, so the monthly above moves as you type.'
-    : '<b style="color:var(--warn)">Currently off.</b> Nothing you type here will change the monthly until you switch it back to Included.';
+    : '<b class="state-warning">Currently off.</b> Nothing you type here will change the monthly until you switch it back to Included.';
 
   $('rvPctLabel').textContent = rvPct().toFixed(1)+'% · '+money(estGmfv(),0);
   $('rvHint').innerHTML = over
@@ -658,15 +754,21 @@ function render(){
   $('rvTweak').value = C.rvTweak;
 
   /* warnings */
-  var w = $('result').querySelector('.warnbox');
+  var w = $('result').querySelector('.notice');
   if(w) w.remove();
   if(r.capped && pcp){
     var d = document.createElement('div');
-    d.className='warnbox';
-    d.style.cssText='background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff';
-    d.innerHTML='Deposit is large enough that the final payment has been trimmed to fit the balance.';
+    d.className='notice';
+    d.textContent='Deposit is large enough that the final payment has been trimmed to fit the balance.';
     $('result').appendChild(d);
   }
+
+  /* one quiet announcement for screen readers, well after the typing stops */
+  clearTimeout(srT);
+  srT = setTimeout(function(){
+    $('srLive').textContent = money(r.monthly,2) + ' a month over ' + S.term +
+      ' months at ' + num(S.apr).toFixed(1) + '% APR.';
+  }, 900);
 
   $('disc').innerHTML =
     '<b>Indicative only.</b> Payments monthly in arrears, first one a month after delivery; the APR is converted to a '+
@@ -775,7 +877,16 @@ function toast(m){
   el.addEventListener('mouseleave', cancel);
   el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 })();
-function openPanel(){ $('scrim').className='scrim show'; $('panel').className='sheetp show'; render(); }
+var panelReturn = null;
+function openPanel(){
+  panelReturn = document.activeElement;
+  $('scrim').hidden = false; $('scrim').className='scrim show';
+  var p = $('panel');
+  p.hidden = false; p.className='sheetp show';
+  $('main').setAttribute('aria-hidden','true');
+  render();
+  p.focus();
+}
 function closePanel(){
   /* pull whatever is sitting in the focused field into state first, then
      drop focus so the next render is free to rewrite every input */
@@ -787,9 +898,26 @@ function closePanel(){
     if(el.id === 'gmfvOver') C.gmfvOver = el.value;
     if(el.blur) el.blur();
   }
-  $('scrim').className='scrim'; $('panel').className='sheetp';
+  $('scrim').className='scrim'; $('scrim').hidden = true;
+  $('panel').className='sheetp'; $('panel').hidden = true;
+  $('main').removeAttribute('aria-hidden');
   render();
+  if(panelReturn && panelReturn.focus) panelReturn.focus();
+  panelReturn = null;
 }
+
+/* escape closes the sheet, and tab stays inside it while it is open */
+document.addEventListener('keydown', function(e){
+  if($('panel').hidden) return;
+  if(e.key === 'Escape'){ e.preventDefault(); closePanel(); return; }
+  if(e.key !== 'Tab') return;
+  var f = $('panel').querySelectorAll('button,input,select,textarea,[href],[tabindex]:not([tabindex="-1"])');
+  f = Array.prototype.filter.call(f, function(el){ return !el.disabled && el.offsetParent !== null; });
+  if(!f.length) return;
+  var first = f[0], last = f[f.length-1];
+  if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+});
 $('scrim').onclick = closePanel;
 $('closePanel').onclick = closePanel;
 $('defaultsBtn').onclick = function(){
@@ -798,7 +926,51 @@ $('defaultsBtn').onclick = function(){
   render();
 };
 
+/* ---------------------------------------------------------------
+   Sticky monthly. The headline lives well down the page on a phone,
+   and with the keyboard up there is almost nothing left to look at,
+   so the figure rides along under the header whenever the real one
+   is not on screen. 10px of hysteresis stops it flickering, and it
+   is re-checked on visualViewport events because that is what iOS
+   fires when the keyboard opens and closes.
+----------------------------------------------------------------*/
+var BAR = 46, stickOn = false, stickQueued = false;
+function stickCheck(){
+  var bar = $('stickBar'), line = $('bigLine');
+  if(!bar || !line) return;
+  var hdr = document.querySelector('header');
+  var base = hdr.offsetHeight - bar.offsetHeight;   /* header without the bar */
+  var vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  var rect = line.getBoundingClientRect();
+  var floor = base + BAR;
+  var want = stickOn ? (rect.bottom < floor + 10 || rect.top > vh)
+                     : (rect.bottom < floor      || rect.top > vh);
+  if(want === stickOn) return;
+  stickOn = want;
+  bar.className = want ? 'stick show' : 'stick';
+}
+function stickSoon(){
+  if(stickQueued) return;
+  stickQueued = true;
+  requestAnimationFrame(function(){ stickQueued = false; stickCheck(); });
+}
+window.addEventListener('scroll', stickSoon, {passive:true});
+window.addEventListener('resize', stickSoon);
+window.addEventListener('orientationchange', function(){ setTimeout(stickCheck, 250); });
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', stickSoon);
+  window.visualViewport.addEventListener('scroll', stickSoon);
+}
+/* keyboard open/close on iOS does not always fire resize - catch focus too */
+document.addEventListener('focusin',  function(){ setTimeout(stickCheck, 300); });
+document.addEventListener('focusout', function(){ setTimeout(stickCheck, 300); });
+$('stickTap').onclick = function(){
+  var el = $('result');
+  if(el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'center'});
+};
+
 render();
+setTimeout(stickCheck, 60);
 })();
 </script>
 </body>
