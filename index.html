@@ -969,6 +969,176 @@ $('stickTap').onclick = function(){
   if(el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'center'});
 };
 
+/* ---- Over time: equity, value and total paid, month by month ---- */
+(function(){ var st=document.createElement('style'); st.textContent=`
+.eqsvg{width:100%;height:auto;display:block;margin:2px 0 8px}
+  .eqkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:14px}
+  .eqkey span{display:flex;align-items:center;gap:6px}
+  .eqkey i{width:14px;height:3px;border-radius:2px;display:block}
+  .eqtab{width:100%;border-collapse:collapse;font-size:13px}
+  .eqtab th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+            font-weight:600;text-align:right;padding:6px 3px;border-bottom:1px solid var(--line-soft)}
+  .eqtab th:first-child{text-align:left}
+  .eqtab td{padding:9px 3px;text-align:right;border-bottom:1px solid var(--line-2);color:var(--ink)}
+  .eqtab td:first-child{text-align:left;font-weight:600}
+  .eqtab tr:last-child td{border-bottom:0}
+  .eqneg{color:var(--danger)}
+  .eqpos{color:var(--success)}
+`; document.head.appendChild(st); })();
+
+(function(){
+  /* ---- what the car is worth at month m, as a % of cash price ----
+     Uses the page's own RV table from 24 months on. Below 24 it curves
+     down from 100% to the 24-month figure, front-loaded, because the
+     table itself starts at 24. Same mileage, age and tweak adjustments
+     as rvPct(). */
+  function rvPctAt(m){
+    if(m <= 0) return 100;
+    var t = RV[S.cond + '_' + S.fuel], ks = TERMS, base;
+    if(m < ks[0]){
+      base = 100 + (t[ks[0]] - 100) * Math.pow(m/ks[0], 0.72);
+    } else {
+      var mm = Math.min(m, ks[ks.length-1]);
+      base = t[ks[ks.length-1]];
+      for(var j=1;j<ks.length;j++){
+        if(mm <= ks[j]){
+          var a = ks[j-1], b = ks[j];
+          base = t[a] + (t[b]-t[a])*(mm-a)/(b-a);
+          break;
+        }
+      }
+    }
+    base += -((S.miles-10000)/1000) * 0.19 * (m/12);
+    if(S.cond === 'used') base += (S.age-2)*1.4;
+    base += C.rvTweak;
+    return clamp(base, 8, 100);
+  }
+
+  /* ---- the month-by-month run ---- */
+  function schedule(){
+    var a = args(), r = calc(a), rows = [], m;
+    for(m = 0; m <= a.term; m++){
+      var paidIn = r.totalDep + r.monthly * Math.min(m, r.n);
+      var owed;
+      if(m <= r.n){
+        owed = r.i === 0
+          ? r.credit - r.monthly*m
+          : r.credit*Math.pow(1+r.i,m) - r.monthly*(Math.pow(1+r.i,m)-1)/r.i;
+      } else {
+        owed = r.finalDue / Math.pow(1+r.i, a.term-m);
+      }
+      if(a.mode !== 'pcp' && m === a.term) owed = 0;
+      owed = Math.max(0, owed);
+      var value = a.price * rvPctAt(m)/100;
+      rows.push({m:m, paidIn:paidIn, owed:owed, value:value, equity:value-owed});
+    }
+    return {a:a, r:r, rows:rows};
+  }
+
+  /* ---- the chart ---- */
+  function chart(d){
+    var W = 640, H = 300, L = 64, R = 12, T = 12, B = 30;
+    var rows = d.rows, term = d.a.term, hi = 0, k;
+    for(k=0;k<rows.length;k++) hi = Math.max(hi, rows[k].paidIn, rows[k].value, rows[k].owed);
+    hi = hi * 1.06 || 1;
+    var x = function(m){ return L + (W-L-R) * (m/term); };
+    var y = function(v){ return T + (H-T-B) * (1 - v/hi); };
+    var path = function(key){
+      return rows.map(function(p,ix){ return (ix?'L':'M') + x(p.m).toFixed(1) + ' ' + y(p[key]).toFixed(1); }).join(' ');
+    };
+
+    var g = '', s;
+    for(s=0;s<=4;s++){
+      var v = hi*s/4, yy = y(v);
+      g += '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#EEF1F2" stroke-width="1"/>' +
+           '<text x="'+(L-8)+'" y="'+(yy+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#58636A">\u00A3'+
+           Math.round(v).toLocaleString('en-GB')+'</text>';
+    }
+    for(s=0;s<=term;s+=12){
+      g += '<text x="'+x(s).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="11" fill="#58636A">'+
+           (s===0?'start':'yr '+(s/12))+'</text>';
+    }
+
+    /* the gap between what it's worth and what's owed IS the equity */
+    var band = path('value') + ' ' + rows.slice().reverse().map(function(p){
+      return 'L' + x(p.m).toFixed(1) + ' ' + y(p.owed).toFixed(1);
+    }).join(' ') + ' Z';
+    g += '<path d="'+band+'" fill="#F2F4F5" stroke="none"/>';
+
+    g += '<path d="'+path('owed')+'" fill="none" stroke="#A82D18" stroke-width="2.5" stroke-linejoin="round"/>';
+    g += '<path d="'+path('value')+'" fill="none" stroke="#077333" stroke-width="2.5" stroke-linejoin="round"/>';
+    g += '<path d="'+path('paidIn')+'" fill="none" stroke="#001E50" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>';
+
+    return '<svg class="eqsvg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Car value, amount owed and total paid over '+
+           term+' months">'+g+'</svg>';
+  }
+
+  /* ---- the card ---- */
+  var card = document.createElement('section');
+  card.className = 'card';
+  card.innerHTML =
+    '<h2 class="ch" id="eqHead">Over time</h2>' +
+    '<div id="eqChart"></div>' +
+    '<div class="eqkey">' +
+      '<span><i style="background:#077333"></i>What it\u2019s worth</span>' +
+      '<span><i style="background:#A82D18"></i>What\u2019s still owed</span>' +
+      '<span><i style="background:#001E50"></i>Total paid in</span>' +
+    '</div>' +
+    '<table class="eqtab"><thead><tr>' +
+      '<th scope="col">Point</th><th scope="col">Paid in</th>' +
+      '<th scope="col">Worth</th><th scope="col">Owed</th><th scope="col">Equity</th>' +
+    '</tr></thead><tbody id="eqBody"></tbody></table>' +
+    '<div class="hint" id="eqHint"></div>';
+
+  function paint(){
+    var d = schedule(), k;
+    $('eqChart').innerHTML = chart(d);
+
+    var marks = [], m;
+    for(m = 12; m <= d.a.term; m += 12) marks.push(m);
+    if(marks[marks.length-1] !== d.a.term) marks.push(d.a.term);
+
+    $('eqBody').innerHTML = marks.map(function(mm){
+      var p = d.rows[mm];
+      var label = (mm % 12 === 0) ? 'Year ' + (mm/12) : 'Month ' + mm;
+      return '<tr><td>' + label + '</td>' +
+             '<td>' + money(p.paidIn,0) + '</td>' +
+             '<td>' + money(p.value,0) + '</td>' +
+             '<td>' + money(p.owed,0) + '</td>' +
+             '<td class="' + (p.equity < 0 ? 'eqneg' : 'eqpos') + '">' + money(p.equity,0) + '</td></tr>';
+    }).join('');
+
+    var end = d.rows[d.a.term], worst = d.rows[0];
+    for(k=0;k<d.rows.length;k++) if(d.rows[k].equity < worst.equity) worst = d.rows[k];
+
+    var msg;
+    if(d.a.mode === 'pcp'){
+      msg = 'The gap between the two solid lines is the equity. It is widest around <b>month ' + worst.m +
+            '</b> at ' + money(worst.equity,0) + ', then closes as the balance falls towards the ' +
+            money(d.r.finalDue,0) + ' final payment, finishing at <b>' + money(end.equity,0) + '</b>. ' +
+            'Because that final payment is guaranteed, a negative gap costs the customer nothing \u2014 they ' +
+            'hand the car back. Anything positive is deposit towards the next one. Car values are an ' +
+            'estimate from the same residual curve as the final payment; the real settlement figure comes from VWFS.';
+    } else {
+      var flip = d.a.term;
+      for(k=1;k<d.rows.length;k++){ if(d.rows[k].equity >= 0){ flip = d.rows[k].m; break; } }
+      msg = 'On Hire Purchase the balance runs down to nil, so the two solid lines meet at the end and the ' +
+            'car is the customer\u2019s. The gap between them is the equity \u2014 negative early, positive from ' +
+            'around <b>month ' + flip + '</b>, finishing at <b>' + money(end.equity,0) + '</b>. Car values are an ' +
+            'estimate from the residual curve, not a settlement figure.';
+    }
+    $('eqHint').innerHTML = msg;
+  }
+
+  var disc = $('disc');
+  if(disc && disc.parentNode) disc.parentNode.insertBefore(card, disc);
+  else document.querySelector('main').appendChild(card);
+
+  var prev = render;
+  render = function(){ prev.apply(this, arguments); try{ paint(); }catch(e){} };
+  paint();
+})();
+
 render();
 setTimeout(stickCheck, 60);
 })();
